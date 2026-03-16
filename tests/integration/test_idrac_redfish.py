@@ -20,7 +20,7 @@ def test_login_session_pass():
     """
 
     host = os.getenv('HOST', 'localhost')
-    port = os.getenv('PORT', 8000)
+    port = os.getenv('PORT', 8001)
     username = os.getenv('USERNAME', 'root')
     password = os.getenv('PASSWORD', 'calvin')
 

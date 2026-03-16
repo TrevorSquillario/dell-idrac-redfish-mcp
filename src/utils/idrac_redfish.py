@@ -38,12 +38,12 @@ class iDRACRedfish:
 	) -> None:
 		self.host = host
 		self.port = port
-		self.base_url = f"https://{host}/redfish/v1"
+		self.base_url = f"https://{host}"
 		# If a full base_url is provided, prefer it. Otherwise construct from host
 		# and optional port. If `port` is None we do not include it in the URL.
-		if port:
+		if port != 443:
 			host_part = f"{host}:{port}"
-			self.base_url = f"https://{host_part}/redfish/v1"
+			self.base_url = f"https://{host_part}"
 			
 		self.verify = verify
 		self.timeout = timeout
@@ -67,7 +67,7 @@ class iDRACRedfish:
 		returned session URI and token (from the response headers or
 			self._token: Optional[str] = None
 		"""
-		url = self._absolute_url('/SessionService/Sessions')
+		url = self._absolute_url('/redfish/v1/SessionService/Sessions')
 		# load cached token for this host if present
 		with _cache_lock:
 			info = _token_cache.get(self.host)

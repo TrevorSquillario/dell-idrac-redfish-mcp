@@ -4,8 +4,8 @@ import json
 import logging
 from fastmcp import FastMCP
 
-from .utils.idrac_redfish import iDRACRedfish
-from .utils.logging_config import configure_logging
+from utils.idrac_redfish import iDRACRedfish
+from utils.logging_config import configure_logging
 
 
 configure_logging()
@@ -16,6 +16,8 @@ mcp = FastMCP("iDRAC Redfish MCP")
 @mcp.tool
 def get_lc_logs(
     host: str,
+    port: int = 443,
+    verify: bool = False,
     username: Optional[str] = None,
     password: Optional[str] = None,
     start_date: Optional[str] = None,
@@ -33,9 +35,9 @@ def get_lc_logs(
         raise ValueError("missing 'host' in params")
 
     # default LC log entries resource
-    uri = "/Managers/iDRAC.Embedded.1/LogServices/Lclog/Entries"
+    uri = "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices/Lclog/Entries"
 
-    client = iDRACRedfish(host)
+    client = iDRACRedfish(host=host, port=port, verify=verify)
 
     # ensure a valid session when credentials are provided
     if username and password:
@@ -107,7 +109,9 @@ def get_lc_logs(
 
 
 if __name__ == "__main__":
-    mcp.run()
+    # Run the MCP server over TCP so the container keeps running
+    # and listens on port 8080 for incoming MCP connections.
+    mcp.run(transport="http", host="0.0.0.0", port=8080)
 
 
 __all__ = ["mcp"]

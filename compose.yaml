@@ -1,0 +1,15 @@
+services:
+  idrac-redfish-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: idrac-redfish-mcp:latest
+    container_name: idrac-redfish-mcp
+    restart: unless-stopped
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./src:/app:ro
+    ports:
+      - "8080:8080"
+

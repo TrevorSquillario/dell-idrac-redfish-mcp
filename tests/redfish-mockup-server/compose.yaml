@@ -1,16 +1,17 @@
 services:
   idrac-mockup-server:
     image: dmtf/redfish-mockup-server:latest
+    container_name: idrac-mockup-server-R7725
     volumes:
       - ~/idrac-mockups/R7725_iDRAC10_1_20_70_50_mockup_client:/mockup
       - ~/idrac-mockups/ssl:/certs
     ports:
-      - "8000:8000"
+      - "8001:8001"
     healthcheck:
       disable: true
     restart: "no"
-    #command: -D /mockup
     entrypoint: >
      python /usr/src/app/redfishMockupServer.py 
-      -H 0.0.0.0 -p 8000
+      -H 0.0.0.0 -p 8001
+      -D /mockup
       -s --cert /certs/server.crt --key /certs/server.key
