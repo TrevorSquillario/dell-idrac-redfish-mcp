@@ -15,6 +15,9 @@ from fastmcp_server import mcp
     "host, port",
     [
         ("localhost", 8001),
+        ("localhost", 8002),
+        ("localhost", 8003),
+        ("localhost", 8004),
     ],
 )
 async def test_get_lc_logs(host, port, username, password, main_mcp_client):

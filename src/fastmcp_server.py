@@ -3,15 +3,23 @@ import os
 import json
 import logging
 from fastmcp import FastMCP
+from starlette.responses import JSONResponse
 
-from utils.idrac_redfish import iDRACRedfish
+from redfish_dell import DellRedfishClient
 from utils.logging_config import configure_logging
-
 
 configure_logging()
 logger = logging.getLogger("idrac_redfish_mcp")
 
 mcp = FastMCP("iDRAC Redfish MCP")
+
+def _get_url(host: str, port: int):
+    if port and port != 443:
+        base_url = f"https://{host}:{port}"
+    else:
+        base_url = f"https://{host}"
+
+    return base_url
 
 @mcp.tool
 def get_lc_logs(
@@ -22,91 +30,34 @@ def get_lc_logs(
     password: Optional[str] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
+    severity: Optional[str] = None,
 ) -> str:
-    """Retrieve iDRAC lifecycle (LC) logs.
+    """
+    Retrieve iDRAC lifecycle (LC) logs from a Dell server.
 
     Args:
-    - host: (str) required
-    - username, password: optional basic auth
-    - start_date, end_date: optional strings to build $filter
+        host: The IP address or hostname of the iDRAC.
+        port: The HTTPS port for the Redfish API (default 443).
+        verify: Whether to verify SSL certificates.
+        username: iDRAC username for basic authentication.
+        password: iDRAC password for basic authentication.
+        start_date: Start filter in this format: YYYY-MM-DDTHH:MM:SS-offset (example: 2023-03-14T10:10:10-05:00)
+        end_date: End filter in this format: YYYY-MM-DDTHH:MM:SS-offset (example: 2023-03-14T10:10:10-05:00)
+        severity: Filter logs by severity, options include: informational, warning and critical
     """
     if not host:
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    # default LC log entries resource
-    uri = "/redfish/v1/Managers/iDRAC.Embedded.1/LogServices/Lclog/Entries"
+    url = _get_url(host=host, port=port)
 
-    client = iDRACRedfish(host=host, port=port, verify=verify)
+    client = DellRedfishClient(base_url=url, username=username, password=password)
+    logs = client.get_lifecycle_logs(start_date=start_date, end_date=end_date, severity=severity)
+    return json.dumps(logs)
 
-    # ensure a valid session when credentials are provided
-    if username and password:
-        try:
-            client.ensure_session(username, password)
-        except Exception:
-            logger.exception("login failed for host %s", host)
-            raise
-
-    query_uri = uri
-    if start_date and end_date:
-        query_uri = f"{uri}?$filter=Created ge '{start_date}' and Created le '{end_date}'"
-
-    collected: List[Dict[str, Any]] = []
-
-    # initial request
-    try:
-        resp = client.get(query_uri)
-    except Exception:
-        logger.exception("request failed for %s", query_uri)
-        raise
-
-    try:
-        data = resp.json()
-    except Exception:
-        logger.exception("invalid json response from %s", query_uri)
-        raise ValueError("invalid json response")
-
-    if resp.status_code == 401:
-        logger.warning("unauthorized access to %s (401)", query_uri)
-        raise PermissionError("unauthorized")
-    if resp.status_code != 200:
-        logger.error("request failed %s status=%s body=%s", query_uri, resp.status_code, data)
-        raise RuntimeError(f"request failed status={resp.status_code}")
-
-    if "Members" not in data:
-        logger.error("no 'Members' key in response from %s", query_uri)
-        raise RuntimeError("no 'Members' key in response")
-
-    if data.get("Members") == []:
-        logger.info("no LC logs in date range or resource for %s", host)
-        return json.dumps([])
-
-    collected.extend(data.get("Members", []))
-
-    # paginate
-    next_link = data.get("Members@odata.nextLink")
-    while next_link:
-        try:
-            resp = client.get(next_link)
-        except Exception:
-            logger.exception("failed following nextLink: %s", next_link)
-            break
-        if resp.status_code != 200:
-            logger.error("nextLink returned status %s for %s", resp.status_code, next_link)
-            break
-        try:
-            data = resp.json()
-        except Exception:
-            logger.exception("invalid json on nextLink %s", next_link)
-            break
-        if "Members" not in data or data.get("Members") == []:
-            break
-        collected.extend(data.get("Members", []))
-        next_link = data.get("Members@odata.nextLink")
-
-    logger.info("collected %d LC log entries for %s", len(collected), host)
-    return json.dumps(collected)
-
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check(request):
+    return JSONResponse({"status": "ok"})
 
 if __name__ == "__main__":
     # Run the MCP server over TCP so the container keeps running
