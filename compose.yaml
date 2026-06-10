@@ -1,39 +1,4 @@
 services:
-  vllm-demo:
-    profiles: 
-      - vllm
-    image: nvcr.io/nvidia/vllm:26.01-py3
-    container_name: vllm-demo
-    ipc: host
-    network_mode: "host"
-    ulimits:
-      memlock: -1
-      stack: 67108864
-    volumes:
-      - ${HOME}/.cache/huggingface:/root/.cache/huggingface
-    command: >
-      vllm serve "Qwen/Qwen3-30B-A3B" 
-        --served-model-name Qwen3-30B-A3B 
-        --port 8000
-        --max-model-len 40960 
-        --gpu-memory-utilization 0.85 
-        --kv-cache-dtype fp8 
-        --tensor-parallel-size 1 
-        --max-num-seqs 16 
-        --enable-prefix-caching 
-        --attention-backend flashinfer 
-        --quantization fp8
-        --enable-auto-tool-choice
-        --tool-call-parser hermes
-        --reasoning-parser deepseek_r1
-    restart: "no"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-
   idrac-redfish-mcp:
     build:
       context: .
@@ -41,32 +6,23 @@ services:
     image: idrac-redfish-mcp:latest
     container_name: idrac-redfish-mcp
     restart: unless-stopped
-    network_mode: "host"
+    #network_mode: "host"
     environment:
       PYTHONUNBUFFERED: "1"
+    ports:
+      - "8088:8080"
     volumes:
       - ./src:/app
-      - ./redfish-dell:/app/redfish-dell
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 1s
       timeout: 1s
       retries: 1
       start_period: 0s
+    networks:
+      - redfishagent
 
-  chat-demo:
-    build:
-      context: ./demo
-      dockerfile: Dockerfile
-    environment:
-      - LOG_LEVEL=DEBUG
-      - MODEL_NAME=Qwen3-30B-A3B
-      - OPENAI_API_BASE=http://localhost:8000/v1
-      - MCP_SERVER_URL=http://localhost:8080/mcp
-    restart: "no"
-    volumes:
-      - ./demo/src:/app:rw
-    network_mode: "host"
-    depends_on:
-      idrac-redfish-mcp:
-        condition: service_healthy
+networks:
+  redfishagent:
+    name: redfishagent_redfishagent
+    external: true

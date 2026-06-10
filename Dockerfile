@@ -13,6 +13,7 @@ RUN apt-get update \
 		gcc \
 		libffi-dev \
 		curl \
+		iputils-ping \
 		ca-certificates \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -20,9 +21,6 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY src/ /app/
-COPY redfish-dell /app/redfish-dell
-
-RUN pip install -e /app/redfish-dell
 
 # Run as non-root user
 RUN addgroup --system app && adduser --system --ingroup app app \
@@ -31,5 +29,5 @@ USER app
 
 EXPOSE 8080
 
-CMD ["python", "fastmcp_server.py"]
+CMD ["fastmcp", "run", "fastmcp_server.py", "--reload", "--transport", "http", "--host", "0.0.0.0", "--port", "8080"]
 
