@@ -15,6 +15,16 @@ logger = logging.getLogger("idrac_redfish_mcp")
 
 mcp = FastMCP("iDRAC Redfish MCP")
 
+# Load common iDRAC credentials from environment so tool definitions
+# do not need to accept username/password parameters.
+IDRAC_USERNAME = os.getenv("IDRAC_USERNAME")
+IDRAC_PASSWORD = os.getenv("IDRAC_PASSWORD")
+_env_verify = os.getenv("IDRAC_SSL_VERIFY")
+if _env_verify is None:
+    DEFAULT_IDRAC_SSL_VERIFY = False
+else:
+    DEFAULT_IDRAC_SSL_VERIFY = _env_verify.lower() in ("1", "true", "yes", "on")
+
 def debug_log_params(func_name: str, params: Dict[str, Any], mask_fields: Optional[List[str]] = None) -> None:
     """
     Log parameters at debug level while redacting sensitive fields.
@@ -54,9 +64,7 @@ def get_error_and_event_registry(
     message_ids: List[str],
     host: str,
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
     Retrieve the iDRAC Message Registry (EEMI) mapping or specific message entries.
@@ -83,8 +91,6 @@ def get_error_and_event_registry(
         "host": host,
         "port": port,
         "verify": verify,
-        "username": username,
-        "password": password,
         "message_ids": message_ids,
     })
 
@@ -107,7 +113,7 @@ def get_error_and_event_registry(
         logger.exception("failed to load local EEMI registry %s", local_path)
 
     # Fallback to querying the iDRAC Redfish registry
-    client = DellRedfishClient(base_url=url, username=username, password=password)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     results = {}
     for message_id in message_ids:
         try:
@@ -123,9 +129,7 @@ def get_error_and_event_registry(
 def get_lc_logs(
     host: str,
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     severity: Optional[str] = None,
@@ -157,8 +161,6 @@ def get_lc_logs(
         "host": host,
         "port": port,
         "verify": verify,
-        "username": username,
-        "password": password,
         "start_date": start_date,
         "end_date": end_date,
         "severity": severity,
@@ -166,7 +168,7 @@ def get_lc_logs(
         "skip": skip,
     })
 
-    client = DellRedfishClient(base_url=url, username=username, password=password)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     logs = client.get_lifecycle_logs(
         start_date=start_date,
         end_date=end_date,
@@ -181,9 +183,7 @@ def get_lc_logs(
 def get_idrac_attributes(
     host: str,
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
     Retrieve iDRAC configuration attributes.
@@ -203,9 +203,9 @@ def get_idrac_attributes(
         raise ValueError("missing 'host' in params")
 
     url = _get_url(host=host, port=port)
-    debug_log_params("get_idrac_attributes", {"host": host, "port": port, "verify": verify, "username": username, "password": password})
+    debug_log_params("get_idrac_attributes", {"host": host, "port": port, "verify": verify})
 
-    client = DellRedfishClient(base_url=url, username=username, password=password, verify=verify)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     try:
         resp = client.get_idrac_attributes()
     except Exception:
@@ -222,9 +222,7 @@ def get_device_rollup_health_status(
     host: str,
     device_filter: str = "all",
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
     Get Dell rollup health status entries filtered by `device_filter`.
@@ -245,9 +243,9 @@ def get_device_rollup_health_status(
         raise ValueError("missing 'host' in params")
 
     url = _get_url(host=host, port=port)
-    debug_log_params("get_device_rollup_health_status", {"host": host, "port": port, "device_filter": device_filter, "verify": verify, "username": username, "password": password})
+    debug_log_params("get_device_rollup_health_status", {"host": host, "port": port, "device_filter": device_filter, "verify": verify})
 
-    client = DellRedfishClient(base_url=url, username=username, password=password, verify=verify)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     try:
         res = client.get_device_rollup_health_status(device_filter=device_filter)
     except Exception:
@@ -262,9 +260,7 @@ def get_memory_processor_health_information(
     host: str,
     device_name: str,
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
     For a given `device_name` collection, return mapping of member -> Health value.
@@ -281,9 +277,9 @@ def get_memory_processor_health_information(
         raise ValueError("missing 'device_name' in params")
 
     url = _get_url(host=host, port=port)
-    debug_log_params("get_memory_processor_health_information", {"host": host, "port": port, "device_name": device_name, "verify": verify, "username": username, "password": password})
+    debug_log_params("get_memory_processor_health_information", {"host": host, "port": port, "device_name": device_name, "verify": verify})
 
-    client = DellRedfishClient(base_url=url, username=username, password=password, verify=verify)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     try:
         res = client.get_memory_processor_health_information(device_name=device_name)
     except Exception:
@@ -298,9 +294,7 @@ def get_server_slot_info(
     host: str,
     slot_type: Optional[str] = None,
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
     Retrieve Dell server slot information (DellSlots collection).
@@ -317,9 +311,9 @@ def get_server_slot_info(
         raise ValueError("missing 'host' in params")
 
     url = _get_url(host=host, port=port)
-    debug_log_params("get_server_slot_info", {"host": host, "port": port, "slot_type": slot_type, "verify": verify, "username": username, "password": password})
+    debug_log_params("get_server_slot_info", {"host": host, "port": port, "slot_type": slot_type, "verify": verify})
 
-    client = DellRedfishClient(base_url=url, username=username, password=password, verify=verify)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     try:
         res = client.get_server_slot_info(slot_type=slot_type)
     except Exception:
@@ -334,9 +328,7 @@ def export_server_screen_shot(
     host: str,
     filetype: int = 2,
     port: int = 443,
-    verify: bool = False,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> Image:
     """
     Trigger a Dell LC action to export a server screenshot and return it as base64.
@@ -353,9 +345,9 @@ def export_server_screen_shot(
         raise ValueError("missing 'host' in params")
 
     url = _get_url(host=host, port=port)
-    debug_log_params("export_server_screen_shot", {"host": host, "port": port, "filetype": filetype, "verify": verify, "username": username, "password": password})
+    debug_log_params("export_server_screen_shot", {"host": host, "port": port, "filetype": filetype, "verify": verify})
 
-    client = DellRedfishClient(base_url=url, username=username, password=password, verify=verify)
+    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
     try:
         img_path = client.export_server_screen_shot(filetype=filetype)
     except Exception:

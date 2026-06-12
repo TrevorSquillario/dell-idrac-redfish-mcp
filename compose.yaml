@@ -6,7 +6,6 @@ services:
     image: idrac-redfish-mcp:latest
     container_name: idrac-redfish-mcp
     restart: unless-stopped
-    #network_mode: "host"
     environment:
       PYTHONUNBUFFERED: "1"
     ports:
@@ -19,10 +18,3 @@ services:
       timeout: 1s
       retries: 1
       start_period: 0s
-    networks:
-      - redfishagent
-
-networks:
-  redfishagent:
-    name: redfishagent_redfishagent
-    external: true
