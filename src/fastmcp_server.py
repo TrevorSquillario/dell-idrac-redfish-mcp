@@ -1,22 +1,23 @@
 from typing import Any, Dict, List, Optional
 import os
+import sys
 import json
 import logging
 import base64
+import asyncio
+import atexit
 from fastmcp import FastMCP
 from fastmcp.utilities.types import Image
 from starlette.responses import JSONResponse
 
-from redfish_dell.client import DellRedfishClient
-from utils.logging_config import configure_logging
+from manager import PerHostSessionManager
+#from utils.logging_config import configure_logging
 
-configure_logging()
+#configure_logging()
 logger = logging.getLogger("idrac_redfish_mcp")
 
 mcp = FastMCP("iDRAC Redfish MCP")
 
-# Load common iDRAC credentials from environment so tool definitions
-# do not need to accept username/password parameters.
 IDRAC_USERNAME = os.getenv("IDRAC_USERNAME")
 IDRAC_PASSWORD = os.getenv("IDRAC_PASSWORD")
 _env_verify = os.getenv("IDRAC_SSL_VERIFY")
@@ -25,43 +26,20 @@ if _env_verify is None:
 else:
     DEFAULT_IDRAC_SSL_VERIFY = _env_verify.lower() in ("1", "true", "yes", "on")
 
-def debug_log_params(func_name: str, params: Dict[str, Any], mask_fields: Optional[List[str]] = None) -> None:
-    """
-    Log parameters at debug level while redacting sensitive fields.
 
-    - func_name: short name to include in the log line
-    - params: dictionary of parameter names -> values
-    - mask_fields: list of keys (case-insensitive) to redact; defaults to common password keys
-    """
-    if mask_fields is None:
-        mask_fields = ["password", "pass", "pwd"]
+session_mgr = PerHostSessionManager(IDRAC_USERNAME, IDRAC_PASSWORD, DEFAULT_IDRAC_SSL_VERIFY)
 
-    safe: Dict[str, Any] = {}
-    mask_set = {m.lower() for m in mask_fields}
-    for k, v in params.items():
-        if k.lower() in mask_set:
-            safe[k] = "***REDACTED***"
-        else:
-            safe[k] = v
-
-    # Try to render as JSON for compactness; fall back to plain repr on failure
+def _close_sessions_at_exit():
     try:
-        logger.debug("%s params: %s", func_name, json.dumps(safe, default=str))
+        asyncio.run(session_mgr.close_all())
     except Exception:
-        logger.debug("%s params (safe): %r", func_name, safe)
+        logger.exception("error while closing cached Redfish sessions at exit")
 
-def _get_url(host: str, port: int):
-    if port and port != 443:
-        base_url = f"https://{host}:{port}"
-    else:
-        base_url = f"https://{host}"
-
-    return base_url
-
+atexit.register(_close_sessions_at_exit)
 
 @mcp.tool
-def get_error_and_event_registry(
-    message_ids: List[str],
+async def get_error_and_event_registry(
+    message_id: Optional[str],
     host: str,
     port: int = 443,
     verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
@@ -86,47 +64,28 @@ def get_error_and_event_registry(
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    url = _get_url(host=host, port=port)
-    debug_log_params("get_error_and_event_registry", {
-        "host": host,
-        "port": port,
-        "verify": verify,
-        "message_ids": message_ids,
-    })
-
-    # Try bundled local EEMI file first
-    local_path = os.path.join(os.path.dirname(__file__), "files", "eemi.json")
+    # First attempt to load bundled registry file if present
     try:
-        if os.path.exists(local_path):
-            logger.info("loading local EEMI registry from %s", local_path)
-            with open(local_path, "r") as fh:
+        base = os.path.dirname(__file__)
+        eemi_path = os.path.join(base, "files", "eemi.json")
+        if os.path.exists(eemi_path):
+            with open(eemi_path, "r", encoding="utf-8") as fh:
                 data = json.load(fh)
             messages = data.get("Messages") or {}
-            # If specific message_ids were requested, return a mapping of
-            # message_id -> entry (None if not found). If no message_ids
-            # were provided, return the entire registry.
-            if message_ids:
-                result_map = {mid: messages.get(mid) for mid in message_ids}
-                return json.dumps(result_map)
+            if message_id:
+                return json.dumps(messages.get(message_id))
             return json.dumps(messages)
     except Exception:
-        logger.exception("failed to load local EEMI registry %s", local_path)
+        logger.debug("failed to load bundled eemi.json, falling back to iDRAC", exc_info=True)
 
-    # Fallback to querying the iDRAC Redfish registry
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    results = {}
-    for message_id in message_ids:
-        try:
-            results[message_id] = client.get_error_and_event_registry(message_id=message_id)
-        except Exception:
-            # Preserve failures as None but continue collecting other IDs
-            logger.exception("failed to fetch registry entry for %s", message_id)
-            results[message_id] = None
-
-    return json.dumps(results)
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        # delegate to the config service
+        res = await client.config.get_error_and_event_registry(message_id)
+    return json.dumps(res, default=str)
 
 @mcp.tool
-def get_lc_logs(
+async def get_lc_logs(
     host: str,
     port: int = 443,
     verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
@@ -155,32 +114,20 @@ def get_lc_logs(
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    url = _get_url(host=host, port=port)
-    # Debug-log the incoming parameters, redact sensitive fields (password).
-    debug_log_params("get_lc_logs", {
-        "host": host,
-        "port": port,
-        "verify": verify,
-        "start_date": start_date,
-        "end_date": end_date,
-        "severity": severity,
-        "top": top,
-        "skip": skip,
-    })
-
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    logs = client.get_lifecycle_logs(
-        start_date=start_date,
-        end_date=end_date,
-        severity=severity,
-        top=top,
-        skip=skip,
-    )
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        logs = await client.logs.get_lifecycle_logs(
+            start_date=start_date,
+            end_date=end_date,
+            severity=severity,
+            top=top,
+            skip=skip,
+        )
     return json.dumps(logs)
 
 
 @mcp.tool
-def get_idrac_attributes(
+async def get_idrac_attributes(
     host: str,
     port: int = 443,
     verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
@@ -202,23 +149,19 @@ def get_idrac_attributes(
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    url = _get_url(host=host, port=port)
-    debug_log_params("get_idrac_attributes", {"host": host, "port": port, "verify": verify})
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            resp = await client.config.get_idrac_attributes()
+        except Exception:
+            logger.exception("failed to fetch iDRAC attributes for %s", host)
+            raise
 
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    try:
-        resp = client.get_idrac_attributes()
-    except Exception:
-        logger.exception("failed to fetch iDRAC attributes for %s", url)
-        raise
-
-    # Accept either a response-like object with `.dict` or a raw mapping
-    data = getattr(resp, "dict", resp)
-    return json.dumps(data, default=str)
+    return json.dumps(resp, default=str)
 
 
 @mcp.tool
-def get_device_rollup_health_status(
+async def get_device_rollup_health_status(
     host: str,
     device_filter: str = "all",
     port: int = 443,
@@ -242,21 +185,19 @@ def get_device_rollup_health_status(
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    url = _get_url(host=host, port=port)
-    debug_log_params("get_device_rollup_health_status", {"host": host, "port": port, "device_filter": device_filter, "verify": verify})
-
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    try:
-        res = client.get_device_rollup_health_status(device_filter=device_filter)
-    except Exception:
-        logger.exception("failed to fetch rollup health status for %s", url)
-        raise
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.health.get_device_rollup_health_status(device_filter=device_filter)
+        except Exception:
+            logger.exception("failed to fetch rollup health status for %s", host)
+            raise
 
     return json.dumps(res, default=str)
 
 
 @mcp.tool
-def get_memory_processor_health_information(
+async def get_memory_processor_health_information(
     host: str,
     device_name: str,
     port: int = 443,
@@ -276,21 +217,21 @@ def get_memory_processor_health_information(
         logger.error("missing 'device_name' in params")
         raise ValueError("missing 'device_name' in params")
 
-    url = _get_url(host=host, port=port)
-    debug_log_params("get_memory_processor_health_information", {"host": host, "port": port, "device_name": device_name, "verify": verify})
+    url = host
 
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    try:
-        res = client.get_memory_processor_health_information(device_name=device_name)
-    except Exception:
-        logger.exception("failed to fetch health information for %s %s", url, device_name)
-        raise
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(url, creds) as client:
+        try:
+            res = await client.health.get_memory_processor_health_information(device_name=device_name)
+        except Exception:
+            logger.exception("failed to fetch health information for %s %s", host, device_name)
+            raise
 
     return json.dumps(res, default=str)
 
 
 @mcp.tool
-def get_server_slot_info(
+async def get_server_slot_info(
     host: str,
     slot_type: Optional[str] = None,
     port: int = 443,
@@ -310,21 +251,19 @@ def get_server_slot_info(
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    url = _get_url(host=host, port=port)
-    debug_log_params("get_server_slot_info", {"host": host, "port": port, "slot_type": slot_type, "verify": verify})
-
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    try:
-        res = client.get_server_slot_info(slot_type=slot_type)
-    except Exception:
-        logger.exception("failed to fetch server slot info for %s", url)
-        raise
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.inventory.get_server_slot_info(slot_type=slot_type)
+        except Exception:
+            logger.exception("failed to fetch server slot info for %s", host)
+            raise
 
     return json.dumps(res, default=str)
 
 
 @mcp.tool
-def export_server_screen_shot(
+async def export_server_screen_shot(
     host: str,
     filetype: int = 2,
     port: int = 443,
@@ -344,15 +283,13 @@ def export_server_screen_shot(
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
 
-    url = _get_url(host=host, port=port)
-    debug_log_params("export_server_screen_shot", {"host": host, "port": port, "filetype": filetype, "verify": verify})
-
-    client = DellRedfishClient(base_url=url, username=IDRAC_USERNAME, password=IDRAC_PASSWORD, verify=verify)
-    try:
-        img_path = client.export_server_screen_shot(filetype=filetype)
-    except Exception:
-        logger.exception("failed to export server screenshot for %s", url)
-        raise
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            img_path = await client.media.export_server_screen_shot(filetype=filetype)
+        except Exception:
+            logger.exception("failed to export server screenshot for %s", host)
+            raise
 
     return Image(path=img_path, format="png")
 
@@ -362,9 +299,12 @@ async def health_check(request):
     return JSONResponse({"status": "ok"})
 
 if __name__ == "__main__":
-    # Run the MCP server over TCP so the container keeps running
-    # and listens on port 8080 for incoming MCP connections.
-    mcp.run(transport="http", host="0.0.0.0", port=8080)
-
-
-__all__ = ["mcp"]
+    # Choose transport mode from environment: "http" (default) or "stdio".
+    TRANSPORT_MODE = os.getenv("IDRAC_MCP_TRANSPORT_MODE", "stdio").lower()
+    logger.info("starting MCP with TRANSPORT_MODE=%s", TRANSPORT_MODE)
+    if TRANSPORT_MODE == "stdio":
+        # Run over stdio (useful for running as a direct process)
+        mcp.run(transport="stdio")
+    else:
+        # Default: run over HTTP so the container keeps running and listens on port 8080.
+        mcp.run(transport="http", host="0.0.0.0", port=8080)

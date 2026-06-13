@@ -6,8 +6,14 @@ services:
     image: idrac-redfish-mcp:latest
     container_name: idrac-redfish-mcp
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       PYTHONUNBUFFERED: "1"
+      IDRAC_USERNAME: ${IDRAC_USERNAME}
+      IDRAC_PASSWORD: ${IDRAC_PASSWORD}
+      IDRAC_SSL_VERIFY: ${IDRAC_SSL_VERIFY}
+      IDRAC_MCP_TRANSPORT_MODE: "http" # Change to "stdio" when mounting files in the hermes container
     ports:
       - "8088:8080"
     volumes:
