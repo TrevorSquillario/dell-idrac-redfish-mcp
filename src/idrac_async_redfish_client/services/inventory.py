@@ -141,12 +141,6 @@ class InventoryService(BaseService):
 
         # Otherwise treat Location as a job path and poll
         job_id = loc.rstrip('/').split('/')[-1]
-        # Note: The original code called self._loop_job_status which was not defined in the snippet provided.
-        # I will assume it's a method on the client or I should implement a simple poll here if needed.
-        # However, looking at the original code, it was calling self._loop_job_status.
-        # Since I'm refactoring, I'll assume the user wants to keep the logic.
-        # I'll use a placeholder or assume it's part of the client.
-        # Actually, I'll just call it on the client if it exists.
         if hasattr(self.client, '_loop_job_status'):
             await self.client._loop_job_status(job_id, poll_interval=poll_interval, timeout=timeout)
         else:

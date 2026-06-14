@@ -109,3 +109,48 @@ async def test_export_server_screen_shot_server_screenshot(mock_idrac_client, ho
             pass
     else:
         pytest.fail(f"unexpected return type from export_server_screen_shot: {type(result)!r}")
+
+
+@pytest.mark.asyncio
+async def test_support_assist_collection_returns_zip_path(mock_idrac_client, host, username, password):
+    if not username or not password:
+        pytest.skip("USERNAME and PASSWORD environment variables required for integration tests")
+
+    await mock_idrac_client.login(username, password)
+
+    # SupportAssist collection can take a while; use a generous timeout
+    result = await mock_idrac_client.support_assist_collection(
+        filter_val="0",
+        data="0,1,2",
+    )
+
+    # result should be a string path to a sacollect.zip in a temp directory
+    assert isinstance(result, str), f"expected str path, got {type(result)!r}"
+    assert os.path.exists(result), f"zip path does not exist: {result}"
+    assert result.endswith('.zip'), f"expected .zip suffix, got: {result}"
+    assert 'sacollect' in result, f"expected 'sacollect' in path, got: {result}"
+
+    # clean up
+    try:
+        os.unlink(result)
+    except Exception:
+        pass
+
+
+@pytest.mark.asyncio
+async def test_get_hardware_inventory_returns_xml_string(mock_idrac_client, host, username, password):
+    if not username or not password:
+        pytest.skip("USERNAME and PASSWORD environment variables required for integration tests")
+
+    await mock_idrac_client.login(username, password)
+
+    # trigger hardware inventory export and wait for the XML result
+    result = await mock_idrac_client.get_hardware_inventory()
+
+    # result should be XML text (a non-empty string starting with <?xml or <)
+    assert isinstance(result, str), f"expected str, got {type(result)!r}"
+    assert result, "hwinv.xml should not be empty"
+    assert result.lstrip().startswith(('<', '<?xml')), f"unexpected XML start: {result[:50]!r}"
+
+    # basic sanity: should mention Dell hardware somewhere in the content
+    assert 'Dell' in result or 'dell' in result.lower(), f"expected Dell hardware info in XML, got: {result[:200]!r}"

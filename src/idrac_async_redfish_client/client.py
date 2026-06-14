@@ -35,6 +35,7 @@ from idrac_async_redfish_client.services.inventory import InventoryService
 from idrac_async_redfish_client.services.health import HealthService
 from idrac_async_redfish_client.services.logs import LogService
 from idrac_async_redfish_client.services.media import MediaService
+from idrac_async_redfish_client.services.support import SupportService
 
 class iDRACAsyncRedfishClient:
     def __init__(
@@ -80,6 +81,7 @@ class iDRACAsyncRedfishClient:
         self.health = HealthService(self)
         self.logs = LogService(self)
         self.media = MediaService(self)
+        self.support = SupportService(self)
 
     async def login(self, username: str, password: str) -> None:
         """Create a Redfish session and store the session token."""
@@ -164,6 +166,12 @@ class iDRACAsyncRedfishClient:
 
     async def get_idrac_attributes(self, *args, **kwargs) -> Any:
         return await self.config.get_idrac_attributes(*args, **kwargs)
+
+    async def support_assist_collection(self, *args, **kwargs) -> Any:
+        return await self.support.support_assist_collection(*args, **kwargs)
+
+    async def get_hardware_inventory(self, *args, **kwargs) -> Any:
+        return await self.inventory.get_hardware_inventory(*args, **kwargs)
 
     async def get_device_rollup_health_status(self, *args, **kwargs) -> Any:
         return await self.health.get_device_rollup_health_status(*args, **kwargs)

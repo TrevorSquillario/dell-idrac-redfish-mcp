@@ -7,10 +7,9 @@ logger = logging.getLogger(__name__)
 
 class SupportService(BaseService):
     async def support_assist_collection(
-        self, 
-        filter_val: Optional[str] = None, 
-        data: Optional[str] = None, 
-        x_auth_token: Optional[str] = None
+        self,
+        filter_val: Optional[str] = None,
+        data: Optional[str] = None,
     ) -> Any:
         """
         Start a SupportAssist collection.
@@ -26,8 +25,6 @@ class SupportService(BaseService):
             3: TTYLogs
             4: TelemetryReports
             5: GPULogs
-        - x_auth_token: Optional[str]
-            X-Auth-Token for authentication.
 
         Returns
         - Any: The final job JSON when completed, or the path to a temporary file
@@ -35,14 +32,14 @@ class SupportService(BaseService):
         """
         uri = "/redfish/v1/Managers/iDRAC.Embedded.1/Oem/Dell/DellLCService/Actions/DellLCService.SupportAssistCollection"
         logger.info("requesting support assist collection %s", uri)
-        
+
         payload = {"ShareType": "Local"}
         if filter_val is not None:
             if filter_val == "0":
                 payload["Filter"] = "No"
             elif filter_val == "1":
                 payload["Filter"] = "Yes"
-        
+
         if data:
             data_selector_values = []
             data_list = [i.strip() for i in data.split(",")]
@@ -57,15 +54,11 @@ class SupportService(BaseService):
             for val in data_list:
                 if val in mapping:
                     data_selector_values.append(mapping[val])
-            
+
             if data_selector_values:
                 payload["DataSelectorArrayIn"] = data_selector_values
 
-        headers = {"Content-Type": "application/json"}
-        if x_auth_token:
-            headers["X-Auth-Token"] = x_auth_token
-
-        resp = await self.client.post(uri, json=payload, headers=headers)
+        resp = await self.client.post(uri, json=payload)
 
         if resp.status_code != 202:
             logger.error("SupportAssistCollection failed status=%s body=%s", resp.status_code, resp.text)
@@ -81,23 +74,15 @@ class SupportService(BaseService):
             logger.error("Failed to get job ID or poll status: %s", e)
             raise RuntimeError(f"SupportAssistCollection failed: {e}")
 
-    async def support_assist_accept_eula(self, x_auth_token: Optional[str] = None) -> None:
+    async def support_assist_accept_eula(self) -> None:
         """
         Accept the SupportAssist EULA.
-
-        Parameters
-        - x_auth_token: Optional[str]
-            X-Auth-Token for authentication.
         """
         uri = "/redfish/v1/Managers/iDRAC.Embedded.1/Oem/Dell/DellLCService/Actions/DellLCService.SupportAssistAcceptEULA"
         logger.info("requesting support assist accept EULA %s", uri)
-        
-        payload = {}
-        headers = {"Content-Type": "application/json"}
-        if x_auth_token:
-            headers["X-Auth-Token"] = x_auth_token
 
-        resp = await self.client.post(uri, json=payload, headers=headers)
+        payload = {}
+        resp = await self.client.post(uri, json=payload)
 
         if resp.status_code not in (200, 202):
             logger.error("SupportAssistAcceptEULA failed status=%s body=%s", resp.status_code, resp.text)
@@ -105,26 +90,18 @@ class SupportService(BaseService):
         
         logger.info("SupportAssistAcceptEULA passed and EULA has been accepted")
 
-    async def support_assist_get_eula_status(self, x_auth_token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    async def support_assist_get_eula_status(self) -> Optional[Dict[str, Any]]:
         """
         Get the SupportAssist EULA status.
-
-        Parameters
-        - x_auth_token: Optional[str]
-            X-Auth-Token for authentication.
 
         Returns
         - Optional[Dict[str, Any]]: The EULA status data.
         """
         uri = "/redfish/v1/Managers/iDRAC.Embedded.1/Oem/Dell/DellLCService/Actions/DellLCService.SupportAssistGetEULAStatus"
         logger.info("requesting support assist get EULA status %s", uri)
-        
-        payload = {}
-        headers = {"Content-Type": "application/json"}
-        if x_auth_token:
-            headers["X-Auth-Token"] = x_auth_token
 
-        resp = await self.client.post(uri, json=payload, headers=headers)
+        payload = {}
+        resp = await self.client.post(uri, json=payload)
 
         if resp.status_code != 200:
             logger.error("SupportAssistGetEULAStatus failed status=%s body=%s", resp.status_code, resp.text)
