@@ -20,7 +20,7 @@ RUN apt-get update \
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY src/ /app/
+COPY ./ /app/
 
 # Run as non-root user
 RUN addgroup --system app && adduser --system --ingroup app app \
@@ -29,5 +29,5 @@ USER app
 
 EXPOSE 8080
 
-CMD ["fastmcp", "run", "fastmcp_server.py", "--reload", "--transport", "http", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["fastmcp", "run", "src/fastmcp_server.py", "--reload", "--transport", "http", "--host", "0.0.0.0", "--port", "8080"]
 

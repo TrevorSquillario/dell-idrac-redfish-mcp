@@ -294,6 +294,42 @@ async def export_server_screen_shot(
     return Image(path=img_path, format="png")
 
 
+@mcp.tool
+async def support_assist_collection(
+    host: str,
+    filter_val: Optional[str] = None,
+    data: Optional[str] = None,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Start a SupportAssist collection via the iDRAC Support service.
+
+    Args:
+        host: iDRAC hostname or IP.
+        filter_val: "0" for No, "1" for Yes.
+        data: Comma-separated list of data selectors (0..5).
+        port: HTTPS port (default 443).
+        verify: Whether to verify SSL certs.
+
+    Returns:
+        JSON string of the job result or path to sacollect.zip.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.support.support_assist_collection(filter_val=filter_val, data=data)
+        except Exception:
+            logger.exception("failed to start SupportAssist collection for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
+
+
 @mcp.custom_route("/health", methods=["GET"])
 async def health_check(request):
     return JSONResponse({"status": "ok"})
