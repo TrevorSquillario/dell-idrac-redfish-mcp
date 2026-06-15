@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 import logging
 from idrac_async_redfish_client.services.base import BaseService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("idrac_redfish_mcp")
 
 class ConfigService(BaseService):
     async def get_error_and_event_registry(self, message_id: str) -> Any:

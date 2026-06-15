@@ -32,8 +32,6 @@ async def main_mcp_client():
     async with Client(transport=mcp) as mcp_client:
         yield mcp_client
 
-
-
 def pytest_addoption(parser):
     parser.addoption(
         "--hosts",
@@ -42,14 +40,11 @@ def pytest_addoption(parser):
         help="Comma-separated list of hosts to run tests against",
     )
 
-
 def pytest_generate_tests(metafunc):
     if "host" in metafunc.fixturenames:
         raw = metafunc.config.getoption("--hosts")
         hosts = [h.strip() for h in raw.split(",") if h.strip()]
         metafunc.parametrize("host", hosts)
-
-
 
 @pytest.fixture
 async def mock_idrac_client(host):
@@ -61,4 +56,19 @@ async def mock_idrac_client(host):
     """
     client = iDRACAsyncRedfishClient(host=host, verify=False)
     yield client
-    await client.close()
+    await client.logout()
+
+
+@pytest.fixture(autouse=True)
+async def clear_session_manager_between_tests():
+    """Autouse fixture: ensure any cached sessions in the module-level
+    `session_mgr` are closed after each test to avoid cross-test reuse.
+    """
+    yield
+    try:
+        # import here to avoid circular import at module import time
+        from fastmcp_server import session_mgr
+        await session_mgr.close_all()
+    except Exception:
+        # best-effort cleanup; don't mask test errors
+        pass

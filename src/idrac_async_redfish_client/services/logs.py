@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 import logging
 from idrac_async_redfish_client.services.base import BaseService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("idrac_redfish_mcp")
 
 class LogService(BaseService):
     async def get_lifecycle_logs(
@@ -48,6 +48,7 @@ class LogService(BaseService):
             params["$filter"] = ' and '.join(filters)
 
         # validate and append top/skip if provided
+        top_i: Optional[int] = None
         if top is not None:
             try:
                 top_i = int(top)
@@ -55,6 +56,9 @@ class LogService(BaseService):
                     raise ValueError("$top must be non-negative")
             except Exception:
                 raise ValueError("invalid $top value")
+            params["$top"] = str(top_i)
+            if top_i == 0:
+                return []
 
         if skip is not None:
             try:
@@ -97,6 +101,10 @@ class LogService(BaseService):
             return []
 
         collected.extend(data.get("Members", []))
+        # honor $top if provided (stop early)
+        if top_i is not None and len(collected) >= top_i:
+            logger.info("honoring $top=%s: truncating collected entries %d -> %d", top_i, len(collected), top_i)
+            return collected[:top_i]
 
         # paginate
         next_link = data.get("Members@odata.nextLink")
@@ -117,6 +125,10 @@ class LogService(BaseService):
             if "Members" not in data or data.get("Members") == []:
                 break
             collected.extend(data.get("Members", []))
+            # honor $top if provided (stop early)
+            if top_i is not None and len(collected) >= top_i:
+                logger.info("honoring $top=%s: truncating collected entries %d -> %d", top_i, len(collected), top_i)
+                return collected[:top_i]
             next_link = data.get("Members@odata.nextLink")
 
         # If server-side filtering failed to apply, perform client-side filter

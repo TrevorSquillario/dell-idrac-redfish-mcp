@@ -1,0 +1,2198 @@
+{
+  "@odata.type": "#MetricReport.v1_5_2.MetricReport",
+  "@odata.context": "/redfish/v1/$metadata#MetricReport.MetricReport",
+  "@odata.id": "/redfish/v1/TelemetryService/MetricReports/MemorySensor",
+  "Id": "MemorySensor",
+  "Name": "MemorySensor Metric Report",
+  "ReportSequence": "108464",
+  "Timestamp": "2026-06-15T07:55:10.000Z",
+  "MetricReportDefinition": {
+    "@odata.id": "/redfish/v1/TelemetryService/MetricReportDefinitions/MemorySensor"
+  },
+  "MetricValues": [
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:13.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:18.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:23.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:28.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:33.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:38.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:43.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:48.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:53.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:58.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:03.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:08.694Z",
+      "MetricValue": "28",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A1",
+          "Label": "DIMM.Socket.A1 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A1"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:13.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:18.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:23.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:28.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:33.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:38.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:43.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:48.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:53.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:58.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:03.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:08.973Z",
+      "MetricValue": "27",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A2",
+          "Label": "DIMM.Socket.A2 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A2"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:11.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:16.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:21.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:26.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:31.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:36.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:41.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:46.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:51.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:56.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:01.418Z",
+      "MetricValue": "24",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:06.834Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A3",
+          "Label": "DIMM.Socket.A3 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A3"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:11.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:16.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:21.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:26.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:31.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:36.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:41.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:46.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:51.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:56.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:01.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:06.676Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A4",
+          "Label": "DIMM.Socket.A4 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A4"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:12.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:17.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:22.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:27.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:32.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:37.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:42.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:47.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:52.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:57.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:02.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:07.517Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A5",
+          "Label": "DIMM.Socket.A5 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A5"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:11.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:16.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:21.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:26.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:31.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:36.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:41.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:46.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:51.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:56.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:01.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:06.958Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A6",
+          "Label": "DIMM.Socket.A6 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A6"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:10.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:15.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:20.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:25.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:30.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:35.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:40.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:45.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:50.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:55.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:00.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:05.274Z",
+      "MetricValue": "23",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A7",
+          "Label": "DIMM.Socket.A7 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A7"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:14.144Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:19.144Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:24.398Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:29.398Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:33.828Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:38.539Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:43.258Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:48.258Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:53.258Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:58.258Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:02.119Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:06.834Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A8",
+          "Label": "DIMM.Socket.A8 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A8"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:11.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:16.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:21.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:26.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:31.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:36.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:41.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:46.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:51.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:56.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:01.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:06.114Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A9",
+          "Label": "DIMM.Socket.A9 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A9"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:10.268Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:15.268Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:20.268Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:25.268Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:30.268Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:35.268Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:38.539Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:43.258Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:47.970Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:52.678Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:57.678Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:02.678Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:07.678Z",
+      "MetricValue": "26",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A10",
+          "Label": "DIMM.Socket.A10 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A10"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:12.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:17.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:22.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:27.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:32.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:37.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:42.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:47.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:52.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:57.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:02.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:07.558Z",
+      "MetricValue": "22",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A11",
+          "Label": "DIMM.Socket.A11 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A11"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:11.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:16.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:21.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:26.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:31.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:36.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:41.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:46.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:51.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:54:56.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:01.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    },
+    {
+      "MetricId": "TemperatureReading",
+      "Timestamp": "2026-06-15T07:55:06.988Z",
+      "MetricValue": "25",
+      "MetricProperty": "",
+      "Oem": {
+        "Dell": {
+          "@odata.type": "#DellMetricReportValue.v1_0_1.DellMetricReportValue",
+          "ContextID": "DIMM.Socket.A12",
+          "Label": "DIMM.Socket.A12 TemperatureReading",
+          "Source": "MemorySensor",
+          "FQDD": "DIMM.Socket.A12"
+        }
+      }
+    }
+  ],
+  "MetricValues@odata.count": 145,
+  "Oem": {
+    "Dell": {
+      "@odata.type": "#DellMetricReport.v1_0_0.DellMetricReport",
+      "ServiceTag": "6K15PZ3",
+      "MetricReportDefinitionDigest": "18178fe926b8210fee8ec0d6959c6eade8535f370af34a01d601766be286cdbd",
+      "iDRACFirmwareVersion": "7.20.80.50"
+    }
+  }
+}

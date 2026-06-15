@@ -10,6 +10,7 @@ services:
       - .env
     environment:
       PYTHONUNBUFFERED: "1"
+      LOG_LEVEL: "INFO"
       IDRAC_USERNAME: ${IDRAC_USERNAME}
       IDRAC_PASSWORD: ${IDRAC_PASSWORD}
       IDRAC_SSL_VERIFY: ${IDRAC_SSL_VERIFY}

@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 import logging
 from idrac_async_redfish_client.services.base import BaseService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("idrac_redfish_mcp")
 
 class HealthService(BaseService):
     async def get_device_rollup_health_status(self, device_filter: str = "all") -> List[Dict[str, Any]]:

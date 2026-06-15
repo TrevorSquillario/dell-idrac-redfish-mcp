@@ -11,9 +11,10 @@ from fastmcp.utilities.types import Image
 from starlette.responses import JSONResponse
 
 from manager import PerHostSessionManager
-#from utils.logging_config import configure_logging
+from utils.logging_config import configure_logging
 
-#configure_logging()
+# Configure logging early so Docker/stdout captures logs consistently
+configure_logging()
 logger = logging.getLogger("idrac_redfish_mcp")
 
 mcp = FastMCP("iDRAC Redfish MCP")
@@ -26,8 +27,13 @@ if _env_verify is None:
 else:
     DEFAULT_IDRAC_SSL_VERIFY = _env_verify.lower() in ("1", "true", "yes", "on")
 
+# Fail fast if required credentials are not provided
+if not IDRAC_USERNAME or not IDRAC_PASSWORD:
+    logger.error("IDRAC_USERNAME and IDRAC_PASSWORD environment variables must be set")
+    raise SystemExit("IDRAC_USERNAME and IDRAC_PASSWORD environment variables must be set")
 
 session_mgr = PerHostSessionManager(IDRAC_USERNAME, IDRAC_PASSWORD, DEFAULT_IDRAC_SSL_VERIFY)
+session_mgr.start_session_logger(interval=10)
 
 def _close_sessions_at_exit():
     try:
@@ -197,34 +203,24 @@ async def get_device_rollup_health_status(
 
 
 @mcp.tool
-async def get_memory_processor_health_information(
+async def get_storage_health(
     host: str,
-    device_name: str,
     port: int = 443,
     verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
-    For a given `device_name` collection, return mapping of member -> Health value.
-
-    Args:
-        host: iDRAC hostname or IP.
-        device_name: The device collection name under `/Systems/...` (e.g. "Memory", "Processors").
+    Retrieve storage health (drive status and PredictedMediaLifeLeftPercent).
     """
     if not host:
         logger.error("missing 'host' in params")
         raise ValueError("missing 'host' in params")
-    if not device_name:
-        logger.error("missing 'device_name' in params")
-        raise ValueError("missing 'device_name' in params")
-
-    url = host
 
     creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
-    async with session_mgr.get_client(url, creds) as client:
+    async with session_mgr.get_client(host, creds) as client:
         try:
-            res = await client.health.get_memory_processor_health_information(device_name=device_name)
+            res = await client.health.get_storage_health()
         except Exception:
-            logger.exception("failed to fetch health information for %s %s", host, device_name)
+            logger.exception("failed to fetch storage health for %s", host)
             raise
 
     return json.dumps(res, default=str)
@@ -257,6 +253,209 @@ async def get_server_slot_info(
             res = await client.inventory.get_server_slot_info(slot_type=slot_type)
         except Exception:
             logger.exception("failed to fetch server slot info for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def get_chassis_info(
+    host: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+    select: Optional[str] = None,
+) -> str:
+    """
+    Parameters:
+    select: Optional comma-separated list of top-level fields to include in the output. Translates to odata $select query parameter. 
+
+    Description:
+    Retrieve the Redfish Chassis resource at /redfish/v1/Chassis/System.Embedded.1
+
+    #### Hardware Identity & Telemetry Status
+    * **Inventory Details:** Manufacturer (Dell), Model (e.g., R6615), Serial Number, SKU, and Part Number.
+    * **Physical Security:** Chassis intrusion sensor states (e.g., `Normal` or tripped).
+
+    #### Exact Physical Location
+    * **Datacenter Coordinates:** Returns the precise physical deployment mapping, including the Data Center name, Room/Lab, Aisle row, Rack identifier, and exact Rack unit slot height (EIA_310 offset).
+
+    #### Complete Component Topology (Resource Maps)
+    Rather than raw performance metrics, this tool maps out the architecture and inventory counts of what the chassis physically contains, providing API routing endpoints (`@odata.id`) for:
+    * **Power & Cooling:** Locations and counts of all installed Power Supplies and Chassis Fans (e.g., 16 fan units).
+    * **Storage Infrastructure:** Links to installed Storage Controllers, BOSS cards, and direct-attached physical drives.
+    * **Compute & I/O Expansion:** Network adapters, Memory arrays, CPU sockets, and the exact count/addresses of all connected PCIe devices (e.g., 27 discrete PCIe endpoints).
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.get_redfish_uri('/redfish/v1/Chassis/System.Embedded.1')
+        except Exception:
+            logger.exception("failed to fetch chassis info for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def get_power_usage(
+    host: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve the PowerControl collection for the chassis. Includes power cap/limits and power consumption readings.
+    
+    Calls: /redfish/v1/Chassis/System.Embedded.1/Power/PowerControl
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.get_redfish_uri('/redfish/v1/Chassis/System.Embedded.1/Power/PowerControl')
+        except Exception:
+            logger.exception("failed to fetch power usage for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def get_system_info(
+    host: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+    select: Optional[str] = None,
+) -> str:
+    """
+    Parameters:
+    select: Optional comma-separated list of top-level fields to include in the output. Translates to odata $select query parameter. 
+
+    Description:
+    Retrieve the Redfish System resource at /redfish/v1/Systems/System.Embedded.1
+
+    #### Core Compute & Memory Allocations
+    * **Processor Architecture:** Returns full hardware context for the execution engine, including socket population (1 CPU), core density (16 physical cores, multithreading disabled), and the exact silicon model (`AMD EPYC 9124 16-Core Processor`).
+    * **Memory Resources:** Summarizes active memory topologies, indicating the aggregate payload volume (`192 GiB`), multi-bit ECC error correction validation, and physical slot configuration (all 12 DIMM slots fully populated).
+
+    #### Live Boot State & Environment Tracing
+    * **Boot Order & Targets:** Exposes the permanent hardware sequence (`UEFI` baseline, active order list), custom temporary bypass override configurations (`Pxe`, `Hdd`, `BiosSetup`, `UefiHttp`), and security boundaries (`SecureBoot` profiles).
+
+    #### Low-Level I/O & Bus Interconnect Maps
+    * **Peripheral Architecture:** Returns structured maps detailing hardware expansion capacities: maximum slot limits (3 PCIe slots), active profiles of all interconnected devices (28 elements)
+    * **Trusted Security Infrastructure:** Verifies local identity and cryptographic integrity components, validating type (`TPM2_0`), running firmware levels (`7.2.2.0`), and current initialization status (`Enabled`).
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.get_redfish_uri('/redfish/v1/Systems/System.Embedded.1', select=select)
+        except Exception:
+            logger.exception("failed to fetch system info for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def get_metric_report_definitions(
+    host: str,
+    report_name: Optional[str] = None,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve metric report's available or the metrics for a specific report.
+
+    Calls: /redfish/v1/TelemetryService/MetricReportDefinitions[/{report}]
+
+    Returns: 
+    If `report_name` is provided it will return a list of the metrics in a report instead. 
+    If not it will return a list of available metric reports.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res_members = await client.telemetry.get_metric_report_definitions(report_name=report_name)
+        except Exception:
+            logger.exception("failed to fetch metric report definitions for %s", host)
+            raise
+    return json.dumps(res_members, default=str)
+
+
+@mcp.tool
+async def get_metric_report_readings(
+    host: str,
+    report_name: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve MetricReport readings and return latest values per MetricId/ContextID.
+
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+    if not report_name:
+        logger.error("missing 'report_name' in params")
+        raise ValueError("missing 'report_name' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.telemetry.get_metric_report_readings(report_name=report_name)
+        except Exception:
+            logger.exception("failed to fetch metric report readings for %s", host)
+            raise
+    return json.dumps(res, default=str)
+
+@mcp.tool
+async def get_storage_controller_info(
+    host: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+    controller: Optional[str] = None,
+    select: Optional[str] = None,
+) -> str:
+    """
+    Retrieve storage controllers listing or a specific controller's info.
+
+    Parameters:
+    select: Optional comma-separated list of top-level fields to include in the output. Translates to odata $select query parameter. 
+
+    If `controller` is None, returns the storage collection at
+    `/redfish/v1/Systems/System.Embedded.1/Storage` which lists controller links.
+    If `controller` is provided, returns the specific controller resource at
+    `/redfish/v1/Systems/System.Embedded.1/Storage/{controller}`.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            if controller:
+                path = f"/redfish/v1/Systems/System.Embedded.1/Storage/{controller}"
+            else:
+                path = "/redfish/v1/Systems/System.Embedded.1/Storage"
+            res = await client.get_redfish_uri(path, select=select)
+        except Exception:
+            logger.exception("failed to fetch storage info for %s (controller=%s)", host, controller)
             raise
 
     return json.dumps(res, default=str)
@@ -329,6 +528,35 @@ async def support_assist_collection(
 
     return json.dumps(res, default=str)
 
+
+@mcp.tool
+async def get_redfish_uri(
+    host: str,
+    path: str,
+    select: Optional[str] = None,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Generic pass-through to fetch any Redfish URI from the target iDRAC and
+    return the payload as-is.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+    if not path:
+        logger.error("missing 'path' in params")
+        raise ValueError("missing 'path' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.get_redfish_uri(path, select=select)
+        except Exception:
+            logger.exception("failed to fetch %s from %s", path, host)
+            raise
+
+    return json.dumps(res, default=str)
 
 @mcp.custom_route("/health", methods=["GET"])
 async def health_check(request):

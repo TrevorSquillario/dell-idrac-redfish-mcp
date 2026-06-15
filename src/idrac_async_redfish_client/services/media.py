@@ -5,7 +5,7 @@ import base64
 from PIL import Image
 from idrac_async_redfish_client.services.base import BaseService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("idrac_redfish_mcp")
 
 class MediaService(BaseService):
     async def export_server_screen_shot(self, filetype: int = 2) -> str:

@@ -21,6 +21,8 @@ import urllib3
 import httpx
 import logging
 import asyncio
+import os
+from urllib.parse import urlparse, quote
 from PIL import Image
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union
@@ -36,6 +38,7 @@ from idrac_async_redfish_client.services.health import HealthService
 from idrac_async_redfish_client.services.logs import LogService
 from idrac_async_redfish_client.services.media import MediaService
 from idrac_async_redfish_client.services.support import SupportService
+from idrac_async_redfish_client.services.telemetry import TelemetryService
 
 class iDRACAsyncRedfishClient:
     def __init__(
@@ -67,6 +70,7 @@ class iDRACAsyncRedfishClient:
         )
 
         self._session_uri: Optional[str] = None
+        self._session_id: Optional[str] = None
         self._token: Optional[str] = None
 
         # Stored credentials for automatic token refreshes
@@ -82,6 +86,7 @@ class iDRACAsyncRedfishClient:
         self.logs = LogService(self)
         self.media = MediaService(self)
         self.support = SupportService(self)
+        self.telemetry = TelemetryService(self)
 
     async def login(self, username: str, password: str) -> None:
         """Create a Redfish session and store the session token."""
@@ -96,6 +101,26 @@ class iDRACAsyncRedfishClient:
         # Extract Session URI from Location header
         if 'Location' in resp.headers:
             self._session_uri = resp.headers['Location']
+
+        # Extract explicit session Id from response body if present, otherwise
+        # attempt to parse it from the Location header as a fallback.
+        session_id = None
+        try:
+            body = resp.json()
+            session_id = body.get('Id') or body.get('id')
+        except Exception:
+            session_id = None
+
+        if not session_id and self._session_uri:
+            try:
+                parsed = urlparse(self._session_uri)
+                path = parsed.path or self._session_uri
+                session_id = path.rstrip('/').rsplit('/', 1)[-1]
+            except Exception:
+                session_id = None
+
+        if session_id:
+            self._session_id = session_id
 
         # Extract token from varying potential case-insensitive headers
         token = resp.headers.get('X-Auth-Token') or resp.headers.get('x-auth-token')
@@ -115,14 +140,26 @@ class iDRACAsyncRedfishClient:
 
     async def logout(self) -> None:
         """Delete the Redfish session if possible and clear credentials."""
-        if self._session_uri:
+        # Prefer explicit session id when deleting the session
+        if self._session_id:
+            try:
+                url = self._absolute_url(f"/redfish/v1/SessionService/Sessions/{self._session_id}")
+                await self.http.delete(url)
+                logger.info(f"session with id {self._session_id} successfully deleted")
+            except Exception as e:
+                logger.error(f"failed to delete session with id {self._session_id}: {e}")
+                pass
+        elif self._session_uri:
             try:
                 await self.http.delete(self._session_uri)
-            except Exception:
+            except Exception as e:
+                logger.error(f"failed to delete session with id {self._session_id}: {e}")
                 pass
         
-        # Clear token and matching headers
+        # Clear token, session identifiers and matching headers
         self._token = None
+        self._session_id = None
+        self._session_uri = None
         if 'X-Auth-Token' in self.http.headers:
             del self.http.headers['X-Auth-Token']
 
@@ -224,7 +261,30 @@ class iDRACAsyncRedfishClient:
         """Explicitly close the underlying HTTPX client transport."""
         await self.http.aclose()
 
-    async def _loop_job_status(self, job_id: str, poll_interval: int = 2, timeout: int = 300) -> Any:
+    async def get_redfish_uri(self, path: str, select: Optional[str] = None) -> Any:
+        """Fetch a Redfish URI and return the payload as-is.
+
+        If `select` is provided, append an OData `$select` query parameter
+        to the path (preserving any existing query string).
+
+        Tries to parse JSON and returns the parsed object; falls back to
+        returning text when JSON parsing fails.
+        """
+        if select:
+            # preserve existing query string if present
+            sel = quote(select, safe=',')
+            if '?' in path:
+                path = f"{path}&$select={sel}"
+            else:
+                path = f"{path}?$select={sel}"
+
+        resp = await self.get(path)
+        try:
+            return resp.json()
+        except Exception:
+            return resp.text
+
+    async def _loop_job_status(self, job_id: str, poll_interval: int = 2, timeout: int = 1800) -> Any:
         """Poll a Redfish job until completion or timeout.
 
         Raises on non-completed terminal job states or on timeout.
@@ -256,24 +316,22 @@ class iDRACAsyncRedfishClient:
                     data = None
                 state = (data or {}).get("JobState") if isinstance(data, dict) else None
                 if state in ("Completed",):
-                    return data
+                    location = resp.headers.get("Location", "")
+                    if "sacollect.zip" in location.lower():
+                        # Download the file
+                        resp_file = await self.get(location)
+                        fd, path = tempfile.mkstemp(suffix=".zip")
+                        try:
+                            with os.fdopen(fd, 'wb') as f:
+                                f.write(resp_file.content)
+                            return {"sacollect_path": path}
+                        except Exception as e:
+                            os.close(fd)
+                            raise e
+                    else:
+                        return data
                 if state in ("Exception", "Killed", "Canceled", "Cancelled", "Failed"):
                     raise RuntimeError(f"job {job_id} ended with state {state}")
-            elif resp.status_code == 204:
-                location = resp.headers.get("Location", "")
-                if "sacollect.zip" in location.lower():
-                    # Download the file
-                    resp_file = await self.get(location)
-                    fd, path = tempfile.mkstemp(suffix=".zip")
-                    try:
-                        with os.fdopen(fd, 'wb') as f:
-                            f.write(resp_file.content)
-                        return path
-                    except Exception as e:
-                        os.close(fd)
-                        raise e
-                else:
-                    raise RuntimeError(f"job {job_id} ended with 204 but Location header does not contain sacollect.zip: {location}")
 
             elapsed = asyncio.get_event_loop().time() - start
             if elapsed >= float(timeout):

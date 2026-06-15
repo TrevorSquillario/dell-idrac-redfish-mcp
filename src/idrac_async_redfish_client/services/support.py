@@ -3,7 +3,7 @@ import logging
 import asyncio
 from idrac_async_redfish_client.services.base import BaseService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("idrac_redfish_mcp")
 
 class SupportService(BaseService):
     async def support_assist_collection(
@@ -58,6 +58,7 @@ class SupportService(BaseService):
             if data_selector_values:
                 payload["DataSelectorArrayIn"] = data_selector_values
 
+        logger.debug("SupportAssistCollection payload: %s", payload)
         resp = await self.client.post(uri, json=payload)
 
         if resp.status_code != 202:

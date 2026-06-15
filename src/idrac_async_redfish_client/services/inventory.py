@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 import logging
 from idrac_async_redfish_client.services.base import BaseService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("idrac_redfish_mcp")
 
 class InventoryService(BaseService):
     async def get_server_slot_info(self, slot_type: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -97,64 +97,100 @@ class InventoryService(BaseService):
         logger.info("collected %d server slot members from %s", len(members), uri)
         return members
 
-    async def get_hardware_inventory(self, poll_interval: int = 2, timeout: int = 300) -> str:
-        """Trigger a Local hardware inventory export, wait for completion, then return the hwinv.xml text.
+    # async def get_hardware_inventory(self, poll_interval: int = 2, timeout: int = 300) -> str:
+    #     """Trigger a Local hardware inventory export, wait for completion, then return the hwinv.xml text.
 
-        - Only supports Local export (ShareType="Local").
-        - If the POST returns Location == "/redfish/v1/Dell/hwinv.xml" the file is fetched immediately.
-        - Otherwise the Location is treated as a job; we poll until Completed then fetch `/redfish/v1/Dell/hwinv.xml`.
+    #     - Only supports Local export (ShareType="Local").
+    #     - If the POST returns Location == "/redfish/v1/Dell/hwinv.xml" the file is fetched immediately.
+    #     - Otherwise the Location is treated as a job; we poll until Completed then fetch `/redfish/v1/Dell/hwinv.xml`.
+    #     """
+    #     uri = "/redfish/v1/Managers/iDRAC.Embedded.1/Oem/Dell/DellLCService/Actions/DellLCService.ExportHWInventory"
+    #     payload = {"ShareType": "Local"}
+    #     payload["FileName"] = "hwinv.xml"
+
+    #     logger.info("posting ExportHWInventory action %s payload=%s", uri, payload)
+    #     resp = await self.client.post(uri, json=payload)
+
+    #     if resp.status_code not in (200, 202):
+    #         logger.error("ExportHWInventory failed %s status=%s body=%s", uri, resp.status_code, None)
+    #         raise RuntimeError(f"ExportHWInventory failed status={resp.status_code}")
+
+    #     loc = None
+    #     try:
+    #         loc = (getattr(resp, 'headers', {}) or {}).get('Location')
+    #     except Exception:
+    #         loc = None
+
+    #     if not loc:
+    #         logger.error("no Location header returned for ExportHWInventory")
+    #         raise RuntimeError("no Location header returned")
+
+    #     # If the device returned the direct hwinv path, fetch and return it
+    #     if loc == "/redfish/v1/Dell/hwinv.xml":
+    #         logger.info("Export returned direct hwinv path; fetching %s", loc)
+    #         r = await self.client.get(loc)
+    #         if r.status_code != 200:
+    #             logger.error("failed to GET %s status=%s body=%s", loc, r.status_code, None)
+    #             raise RuntimeError(f"failed to retrieve hwinv.xml status={r.status_code}")
+    #         if hasattr(r, 'text') and isinstance(r.text, str):
+    #             return r.text
+    #         if hasattr(r, 'content') and isinstance(r.content, (bytes, bytearray)):
+    #             return r.content.decode('utf-8', errors='replace')
+    #         # fallback
+    #         raise RuntimeError("unexpected response when retrieving hwinv.xml")
+
+    #     # Otherwise treat Location as a job path and poll
+    #     job_id = loc.rstrip('/').split('/')[-1]
+    #     if hasattr(self.client, '_loop_job_status'):
+    #         await self.client._loop_job_status(job_id, poll_interval=poll_interval, timeout=timeout)
+    #     else:
+    #         # Fallback: if not found, we might need to implement it or it's a mistake in the original code.
+    #         # For now, I'll just log a warning.
+    #         logger.warning("client._loop_job_status not found, skipping polling")
+
+    #     # After completion fetch the exported XML
+    #     final = await self.client.get('/redfish/v1/Dell/hwinv.xml')
+    #     if final.status_code != 200:
+    #         logger.error("failed to GET /redfish/v1/Dell/hwinv.xml status=%s body=%s", final.status_code, None)
+    #         raise RuntimeError(f"failed to retrieve hwinv.xml status={final.status_code}")
+    #     if hasattr(final, 'text') and isinstance(final.text, str):
+    #         return final.text
+    #     if hasattr(final, 'content') and isinstance(final.content, (bytes, bytearray)):
+    #         return final.content.decode('utf-8', errors='replace')
+    #     raise RuntimeError("unexpected response when retrieving hwinv.xml")
+
+    async def get_firmware_inventory(self) -> List[Dict[str, Any]]:
+        """Return FirmwareInventory Members (expanded one level).
+
+        Mirrors the previous synchronous logic that requested
+        `/redfish/v1/UpdateService/FirmwareInventory?$expand=*($levels=1)`
+        and returns the `Members` list.
         """
-        uri = "/redfish/v1/Managers/iDRAC.Embedded.1/Oem/Dell/DellLCService/Actions/DellLCService.ExportHWInventory"
-        payload = {"ShareType": "Local"}
-        payload["FileName"] = "hwinv.xml"
+        uri = "/redfish/v1/UpdateService/FirmwareInventory?$expand=*($levels=1)"
+        logger.info("requesting firmware inventory %s", uri)
+        resp = await self.client.get(uri)
 
-        logger.info("posting ExportHWInventory action %s payload=%s", uri, payload)
-        resp = await self.client.post(uri, json=payload)
+        if resp.status_code == 401:
+            logger.warning("unauthorized access to %s (401)", uri)
+            raise PermissionError("unauthorized")
+        if resp.status_code != 200:
+            try:
+                body = resp.json()
+            except Exception:
+                body = None
+            logger.error("failed to get firmware inventory %s status=%s body=%s", uri, resp.status_code, body)
+            raise RuntimeError(f"request failed status={resp.status_code}")
 
-        if resp.status_code not in (200, 202):
-            logger.error("ExportHWInventory failed %s status=%s body=%s", uri, resp.status_code, None)
-            raise RuntimeError(f"ExportHWInventory failed status={resp.status_code}")
-
-        loc = None
         try:
-            loc = (getattr(resp, 'headers', {}) or {}).get('Location')
+            data = resp.json()
         except Exception:
-            loc = None
+            logger.exception("invalid json response from %s", uri)
+            raise ValueError("invalid json response")
 
-        if not loc:
-            logger.error("no Location header returned for ExportHWInventory")
-            raise RuntimeError("no Location header returned")
+        members = data.get("Members", []) if isinstance(data, dict) else []
+        if not isinstance(members, list):
+            logger.warning("Firmware inventory Members not a list for %s", uri)
+            return []
 
-        # If the device returned the direct hwinv path, fetch and return it
-        if loc == "/redfish/v1/Dell/hwinv.xml":
-            logger.info("Export returned direct hwinv path; fetching %s", loc)
-            r = await self.client.get(loc)
-            if r.status_code != 200:
-                logger.error("failed to GET %s status=%s body=%s", loc, r.status_code, None)
-                raise RuntimeError(f"failed to retrieve hwinv.xml status={r.status_code}")
-            if hasattr(r, 'text') and isinstance(r.text, str):
-                return r.text
-            if hasattr(r, 'content') and isinstance(r.content, (bytes, bytearray)):
-                return r.content.decode('utf-8', errors='replace')
-            # fallback
-            raise RuntimeError("unexpected response when retrieving hwinv.xml")
-
-        # Otherwise treat Location as a job path and poll
-        job_id = loc.rstrip('/').split('/')[-1]
-        if hasattr(self.client, '_loop_job_status'):
-            await self.client._loop_job_status(job_id, poll_interval=poll_interval, timeout=timeout)
-        else:
-            # Fallback: if not found, we might need to implement it or it's a mistake in the original code.
-            # For now, I'll just log a warning.
-            logger.warning("client._loop_job_status not found, skipping polling")
-
-        # After completion fetch the exported XML
-        final = await self.client.get('/redfish/v1/Dell/hwinv.xml')
-        if final.status_code != 200:
-            logger.error("failed to GET /redfish/v1/Dell/hwinv.xml status=%s body=%s", final.status_code, None)
-            raise RuntimeError(f"failed to retrieve hwinv.xml status={final.status_code}")
-        if hasattr(final, 'text') and isinstance(final.text, str):
-            return final.text
-        if hasattr(final, 'content') and isinstance(final.content, (bytes, bytearray)):
-            return final.content.decode('utf-8', errors='replace')
-        raise RuntimeError("unexpected response when retrieving hwinv.xml")
+        logger.info("collected %d firmware inventory members from %s", len(members), uri)
+        return members
