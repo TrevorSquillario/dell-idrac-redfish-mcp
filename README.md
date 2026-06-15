@@ -28,7 +28,7 @@ volumes:
 mcp_servers:
   idrac:
     command: "/opt/venv/bin/python"
-    args: ["/mcp/idrac-redfish-mcp/src/fastmcp-server.py"]
+    args: ["/mcp/idrac-redfish-mcp/src/fastmcp_server.py"]
     env:
       IDRAC_USERNAME: ${IDRAC_USERNAME}
       IDRAC_PASSWORD: ${IDRAC_PASSWORD}
