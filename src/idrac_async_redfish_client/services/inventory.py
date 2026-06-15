@@ -192,5 +192,158 @@ class InventoryService(BaseService):
             logger.warning("Firmware inventory Members not a list for %s", uri)
             return []
 
-        logger.info("collected %d firmware inventory members from %s", len(members), uri)
-        return members
+        simplified: List[Dict[str, Any]] = []
+        for m in members:
+            # If member is a reference string, try to fetch expanded member
+            member_obj = m
+            if isinstance(m, str):
+                try:
+                    r = await self.client.get(m)
+                    if r.status_code == 200:
+                        member_obj = r.json()
+                    else:
+                        logger.debug("failed to GET firmware member %s status=%s", m, r.status_code)
+                        continue
+                except Exception:
+                    logger.exception("failed to fetch firmware member %s", m)
+                    continue
+
+            if not isinstance(member_obj, dict):
+                continue
+
+            name = member_obj.get("Name")
+            release = member_obj.get("ReleaseDate")
+            # Some devices use 'Updateable' spelling
+            updatable = member_obj.get("Updateable")
+            version = member_obj.get("Version")
+
+            simplified.append({
+                "Name": name,
+                "ReleaseDate": release,
+                "Updatable": updatable,
+                "Version": version,
+            })
+
+        logger.info("collected %d firmware inventory members from %s", len(simplified), uri)
+        return simplified
+
+    async def get_pciedevice_info(self, all: bool = False) -> List[Dict[str, Any]]:
+        """Return expanded PCIe device info for members under the chassis PCIeDevices collection.
+
+        Parameters
+        - all: bool
+            If False (default) filter results to entries where `SlotLocationType` == "Slot". Thus returning a list of physical slots with cards in them.
+
+        For each member in `/redfish/v1/Chassis/System.Embedded.1/PCIeDevices` the
+        method follows the member's odata id and collects a subset of properties:
+        - Manufacturer, Model, Name, PartNumber, SKU, SerialNumber, Slot,
+          Status.Health, Description, FirmwareVersion, Id
+        """
+        uri = "/redfish/v1/Chassis/System.Embedded.1/PCIeDevices"
+        logger.info("requesting PCIe devices collection %s", uri)
+        resp = await self.client.get(uri)
+
+        if resp.status_code == 401:
+            logger.warning("unauthorized access to %s (401)", uri)
+            raise PermissionError("unauthorized")
+        if resp.status_code != 200:
+            try:
+                body = resp.json()
+            except Exception:
+                body = None
+            logger.error("failed to get PCIeDevices %s status=%s body=%s", uri, resp.status_code, body)
+            raise RuntimeError(f"request failed status={resp.status_code}")
+
+        try:
+            data = resp.json()
+        except Exception:
+            logger.exception("invalid json response from %s", uri)
+            raise ValueError("invalid json response")
+
+        members = data.get("Members", []) if isinstance(data, dict) else []
+        if not isinstance(members, list):
+            logger.warning("PCIeDevices Members not a list for %s", uri)
+            return []
+
+        results: List[Dict[str, Any]] = []
+        for m in members:
+            # member can be a dict with @odata.id or a single string
+            member_uri = None
+            if isinstance(m, dict):
+                member_uri = m.get("@odata.id")
+            elif isinstance(m, str):
+                member_uri = m
+
+            if not member_uri:
+                logger.debug("skipping PCIeDevices member without uri: %s", m)
+                continue
+
+            logger.debug("requesting PCIe device details %s", member_uri)
+            try:
+                r = await self.client.get(member_uri)
+            except Exception:
+                logger.exception("failed request for member %s", member_uri)
+                continue
+
+            if r.status_code != 200:
+                logger.warning("failed to GET member %s status=%s", member_uri, r.status_code)
+                continue
+
+            try:
+                dev = r.json()
+            except Exception:
+                logger.exception("invalid json for PCIe device %s", member_uri)
+                continue
+
+            # extract required properties
+            entry: Dict[str, Any] = {}
+            entry["Manufacturer"] = dev.get("Manufacturer")
+            entry["Model"] = dev.get("Model")
+            entry["Name"] = dev.get("Name")
+            entry["PartNumber"] = dev.get("PartNumber")
+            entry["SKU"] = dev.get("SKU")
+            entry["SerialNumber"] = dev.get("SerialNumber")
+            slot = dev.get("Slot") if isinstance(dev.get("Slot"), dict) else {}
+            entry["SlotLanes"] = slot.get("Lanes") if isinstance(slot, dict) else None
+            # parse nested Location -> PartLocation for ordinal and type
+            part_location: Dict[str, Any] = {}
+            if isinstance(slot, dict):
+                loc = slot.get("Location")
+                if isinstance(loc, dict):
+                    pl = loc.get("PartLocation")
+                    if isinstance(pl, dict):
+                        part_location = pl
+            entry["SlotLocationType"] = part_location.get("LocationType") if isinstance(part_location, dict) else None
+            entry["SlotNumber"] = part_location.get("LocationOrdinalValue") if isinstance(part_location, dict) else None
+            entry["PCIeType"] = slot.get("PCIeType") if isinstance(slot, dict) else None
+            entry["SlotType"] = slot.get("SlotType") if isinstance(slot, dict) else None
+            # Status.Health may be nested under Status
+            status = dev.get("Status") if isinstance(dev.get("Status"), dict) else {}
+            entry["Status.Health"] = status.get("Health") if isinstance(status, dict) else None
+            entry["Description"] = dev.get("Description")   
+            entry["FirmwareVersion"] = dev.get("FirmwareVersion")
+            entry["Id"] = dev.get("Id")
+
+            results.append(entry)
+
+        # sort results by SlotLocationType (string) then SlotNumber (ordinal)
+        def _pcie_sort_key(e: Dict[str, Any]):
+            loc_type = e.get("SlotLocationType") or ""
+            num = e.get("SlotNumber")
+            try:
+                num_val = int(num) if num is not None else float('inf')
+            except Exception:
+                num_val = float('inf')
+            return (loc_type, num_val)
+
+        try:
+            # If `all` is False, first filter to only physical slots then sort.
+            if not all:
+                results = [e for e in results if e.get("SlotLocationType") == "Slot"]
+                logger.info("filtered PCIe device entries to SlotLocationType='Slot' -> %d entries", len(results))
+            results.sort(key=_pcie_sort_key)
+        except Exception:
+            logger.exception("failed to sort PCIe device entries; returning unsorted results")
+
+        logger.info("collected %d PCIe device entries from %s", len(results), uri)
+        return results

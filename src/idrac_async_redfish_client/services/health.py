@@ -46,61 +46,61 @@ class HealthService(BaseService):
 
         return matched
 
-    async def get_memory_processor_health_information(self, device_name: str) -> Dict[str, Optional[str]]:
-        """For a given `device_name` collection, query each member's Status/Health.
+    # async def get_memory_processor_health_information(self, device_name: str) -> Dict[str, Optional[str]]:
+    #     """For a given `device_name` collection, query each member's Status/Health.
 
-        Returns a mapping of member short-name -> Health value (or None if absent).
-        """
-        base_uri = f"/redfish/v1/Systems/System.Embedded.1/{device_name}"
-        logger.info("requesting members for %s", base_uri)
-        resp = await self.client.get(base_uri)
+    #     Returns a mapping of member short-name -> Health value (or None if absent).
+    #     """
+    #     base_uri = f"/redfish/v1/Systems/System.Embedded.1/{device_name}"
+    #     logger.info("requesting members for %s", base_uri)
+    #     resp = await self.client.get(base_uri)
 
-        if resp.status_code == 401:
-            logger.warning("unauthorized access to %s (401)", base_uri)
-            raise PermissionError("unauthorized")
-        if resp.status_code != 200:
-            logger.error("failed to get resource %s status=%s body=%s", base_uri, resp.status_code, None)
-            raise RuntimeError(f"request failed status={resp.status_code}")
+    #     if resp.status_code == 401:
+    #         logger.warning("unauthorized access to %s (401)", base_uri)
+    #         raise PermissionError("unauthorized")
+    #     if resp.status_code != 200:
+    #         logger.error("failed to get resource %s status=%s body=%s", base_uri, resp.status_code, None)
+    #         raise RuntimeError(f"request failed status={resp.status_code}")
 
-        data = resp.json()
-        members = data.get("Members", [])
-        if not isinstance(members, list) or members == []:
-            logger.info("no members found for %s", base_uri)
-            return {}
+    #     data = resp.json()
+    #     members = data.get("Members", [])
+    #     if not isinstance(members, list) or members == []:
+    #         logger.info("no members found for %s", base_uri)
+    #         return {}
 
-        results: Dict[str, Optional[str]] = {}
-        for m in members:
-            member_id = None
-            if isinstance(m, dict):
-                member_id = m.get("@odata.id") or m.get("href")
-            elif isinstance(m, str):
-                member_id = m
-            if not member_id:
-                logger.debug("skipping member without @odata.id/href in %s", base_uri)
-                continue
+    #     results: Dict[str, Optional[str]] = {}
+    #     for m in members:
+    #         member_id = None
+    #         if isinstance(m, dict):
+    #             member_id = m.get("@odata.id") or m.get("href")
+    #         elif isinstance(m, str):
+    #             member_id = m
+    #         if not member_id:
+    #             logger.debug("skipping member without @odata.id/href in %s", base_uri)
+    #             continue
 
-            # ensure path-only URI for client.get; if member_id includes host, use as-is
-            select_uri = member_id + ('?$select=Status/Health' if '?' not in member_id else '&$select=Status/Health')
-            logger.debug("requesting Health for %s", select_uri)
-            r2 = await self.client.get(select_uri)
-            if r2.status_code != 200:
-                logger.error("failed to get health for %s status=%s", select_uri, r2.status_code)
-                results[member_id.split("/")[-1]] = None
-                continue
-            try:
-                d2 = r2.json()
-            except Exception:
-                logger.exception("invalid json for %s", select_uri)
-                results[member_id.split("/")[-1]] = None
-                continue
+    #         # ensure path-only URI for client.get; if member_id includes host, use as-is
+    #         select_uri = member_id + ('?$select=Status/Health' if '?' not in member_id else '&$select=Status/Health')
+    #         logger.debug("requesting Health for %s", select_uri)
+    #         r2 = await self.client.get(select_uri)
+    #         if r2.status_code != 200:
+    #             logger.error("failed to get health for %s status=%s", select_uri, r2.status_code)
+    #             results[member_id.split("/")[-1]] = None
+    #             continue
+    #         try:
+    #             d2 = r2.json()
+    #         except Exception:
+    #             logger.exception("invalid json for %s", select_uri)
+    #             results[member_id.split("/")[-1]] = None
+    #             continue
 
-            health = None
-            if isinstance(d2, dict):
-                health = (d2.get("Status") or {}).get("Health")
-            results[member_id.split("/")[-1]] = health
+    #         health = None
+    #         if isinstance(d2, dict):
+    #             health = (d2.get("Status") or {}).get("Health")
+    #         results[member_id.split("/")[-1]] = health
 
-        logger.info("collected health for %d members under %s", len(results), base_uri)
-        return results
+    #     logger.info("collected health for %d members under %s", len(results), base_uri)
+    #     return results
 
     async def get_storage_health(self) -> List[Dict[str, Any]]:
         """Return `Status` and `PredictedMediaLifeLeftPercent` for each drive.

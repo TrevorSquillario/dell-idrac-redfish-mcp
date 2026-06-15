@@ -25,6 +25,7 @@ import os
 from urllib.parse import urlparse, quote
 from PIL import Image
 from datetime import datetime
+import os
 from typing import Any, Dict, List, Optional, Union
 import io
 import base64
@@ -72,6 +73,9 @@ class iDRACAsyncRedfishClient:
         self._session_uri: Optional[str] = None
         self._session_id: Optional[str] = None
         self._token: Optional[str] = None
+
+        # Timestamp when the current token was created (UTC)
+        self._token_created_at: Optional[datetime] = None
 
         # Stored credentials for automatic token refreshes
         self._username: Optional[str] = None
@@ -137,6 +141,11 @@ class iDRACAsyncRedfishClient:
         if token:
             self._token = token
             self.http.headers.update({'X-Auth-Token': self._token})
+            # record token creation time
+            try:
+                self._token_created_at = datetime.utcnow()
+            except Exception:
+                self._token_created_at = None
 
     async def logout(self) -> None:
         """Delete the Redfish session if possible and clear credentials."""
@@ -169,10 +178,43 @@ class iDRACAsyncRedfishClient:
         self.http.headers.update({'X-Auth-Token': self._token})
         if session_uri:
             self._session_uri = session_uri
+        # record when a token is set externally
+        try:
+            self._token_created_at = datetime.utcnow()
+        except Exception:
+            self._token_created_at = None
 
     def token_valid(self) -> bool:
         """Return True if a token exists."""
-        return bool(self._token)
+        if not self._token:
+            return False
+
+        # Enforce timeout from environment variable (seconds)
+        try:
+            timeout = int(os.getenv("IDRAC_SESSION_TIMEOUT", "1800"))
+        except Exception:
+            timeout = 1800
+
+        if not self._token_created_at:
+            # If we don't know when the token was created, consider it valid
+            # to preserve backwards compatibility.
+            return True
+
+        try:
+            age = (datetime.utcnow() - self._token_created_at).total_seconds()
+            if age > float(timeout):
+                # Expired: clear token and related session state to force re-auth
+                self._token = None
+                self._session_id = None
+                self._session_uri = None
+                if 'X-Auth-Token' in self.http.headers:
+                    del self.http.headers['X-Auth-Token']
+                return False
+        except Exception:
+            # On any error while checking age, be conservative and treat token as valid
+            return True
+
+        return True
 
     async def ensure_session(self, username: str, password: str) -> None:
         """Ensure a valid session/token exists. If not, create one."""

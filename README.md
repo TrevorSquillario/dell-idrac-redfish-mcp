@@ -5,7 +5,24 @@ The goal of this project is not to be at feature parity with every Redfish endpo
 
 # Setup
 
+Copy `.env.example` to `.env` or update the `compose.yaml` with the required environment variables.
+
 Update your Hermes `config.yaml` with:
+
+For `http`
+
+```
+mcp_servers:
+  idrac:
+    url: http://192.168.8.110:8088/mcp
+    ssl_verify: false
+```
+
+For `stdio` you can add a volume mapping to your `compose.yaml`
+```
+volumes:
+- ../../idrac-redfish-mcp:/mcp/idrac-redfish-mcp:ro
+```
 
 ```
 mcp_servers:

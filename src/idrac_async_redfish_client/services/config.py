@@ -193,6 +193,53 @@ class ConfigService(BaseService):
 
         return results
 
+    async def search_bios_attributes(self, term: str) -> Dict[str, Any]:
+        """Search BIOS `Attributes` for a matching attribute name or value.
+
+        Returns a mapping of matching attribute names to their values. Matching
+        is case-insensitive and checks both the attribute key and the string
+        representation of the value.
+        """
+        if term is None:
+            raise ValueError("term is required")
+
+        attrs = await self.get_bios_attributes()
+        if not isinstance(attrs, dict):
+            logger.error("unexpected BIOS attributes format when searching")
+            raise RuntimeError("invalid BIOS attributes format")
+
+        q = str(term).lower()
+        results: Dict[str, Any] = {}
+        for k, v in attrs.items():
+            if q in str(k).lower() or q in str(v).lower():
+                results[k] = v
+
+        logger.info("bios search term=%s found %d matches", term, len(results))
+        return results
+
+    async def search_idrac_attributes(self, term: str, group: str = "idrac") -> Dict[str, Any]:
+        """Search iDRAC `Attributes` for a matching attribute name or value.
+
+        Calls `get_idrac_attributes` to fetch the raw attributes for the
+        specified `group` and returns any matches as a mapping.
+        """
+        if term is None:
+            raise ValueError("term is required")
+
+        attrs = await self.get_idrac_attributes(group=group)
+        if not isinstance(attrs, dict):
+            logger.error("unexpected iDRAC attributes format when searching for group=%s", group)
+            raise RuntimeError("invalid iDRAC attributes format")
+
+        q = str(term).lower()
+        results: Dict[str, Any] = {}
+        for k, v in attrs.items():
+            if q in str(k).lower() or q in str(v).lower():
+                results[k] = v
+
+        logger.info("idrac search term=%s group=%s found %d matches", term, group, len(results))
+        return results
+
     async def get_location_indicator_active(self) -> bool:
         """Return the current value of the LocationIndicatorActive property from the Chassis.
 

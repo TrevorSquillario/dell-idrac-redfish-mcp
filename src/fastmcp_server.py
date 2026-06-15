@@ -90,6 +90,7 @@ async def get_error_and_event_registry(
         res = await client.config.get_error_and_event_registry(message_id)
     return json.dumps(res, default=str)
 
+
 @mcp.tool
 async def get_lc_logs(
     host: str,
@@ -130,40 +131,6 @@ async def get_lc_logs(
             skip=skip,
         )
     return json.dumps(logs)
-
-
-@mcp.tool
-async def get_idrac_attributes(
-    host: str,
-    port: int = 443,
-    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
-) -> str:
-    """
-    Retrieve iDRAC configuration attributes.
-
-    Args:
-        host: iDRAC hostname or IP.
-        port: HTTPS port (default 443).
-        verify: Whether to verify SSL certs.
-        username: iDRAC username.
-        password: iDRAC password.
-
-    Returns:
-        JSON string containing the attributes mapping.
-    """
-    if not host:
-        logger.error("missing 'host' in params")
-        raise ValueError("missing 'host' in params")
-
-    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
-    async with session_mgr.get_client(host, creds) as client:
-        try:
-            resp = await client.config.get_idrac_attributes()
-        except Exception:
-            logger.exception("failed to fetch iDRAC attributes for %s", host)
-            raise
-
-    return json.dumps(resp, default=str)
 
 
 @mcp.tool
@@ -234,7 +201,8 @@ async def get_server_slot_info(
     verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
 ) -> str:
     """
-    Retrieve Dell server slot information (DellSlots collection).
+    Retrieve Dell server slot information (DellSlots collection). 
+    Mapping of physical slot locations and device FQDD occupying the slot.
 
     Args:
         host: iDRAC hostname or IP.
@@ -257,6 +225,30 @@ async def get_server_slot_info(
 
     return json.dumps(res, default=str)
 
+@mcp.tool
+async def get_pciedevice_info(
+    host: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve PCIe device inventory for the chassis and return a concise list.
+
+    Calls: /redfish/v1/Chassis/System.Embedded.1/PCIeDevices and expands each member.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.inventory.get_pciedevice_info()
+        except Exception:
+            logger.exception("failed to fetch PCIe device info for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
 
 @mcp.tool
 async def get_chassis_info(
@@ -299,6 +291,31 @@ async def get_chassis_info(
 
     return json.dumps(res, default=str)
 
+@mcp.tool
+async def get_firmware_inventory(
+    host: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve FirmwareInventory members for the target iDRAC.
+
+    Calls: /redfish/v1/UpdateService/FirmwareInventory?$expand=*($levels=1)
+    Returns a JSON list of firmware inventory member objects.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.inventory.get_firmware_inventory()
+        except Exception:
+            logger.exception("failed to fetch firmware inventory for %s", host)
+            raise
+
+    return json.dumps(res, default=str)
 
 @mcp.tool
 async def get_power_usage(
@@ -456,6 +473,146 @@ async def get_storage_controller_info(
             res = await client.get_redfish_uri(path, select=select)
         except Exception:
             logger.exception("failed to fetch storage info for %s (controller=%s)", host, controller)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def get_bios_attributes(
+    host: str,
+    attributes: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve BIOS attribute(s) by name from the target iDRAC.
+
+    Args:
+        host: iDRAC hostname or IP.
+        attributes: Comma-separated BIOS attribute name(s) to retrieve (required).
+        port: HTTPS port (default 443).
+        verify: Whether to verify SSL certs.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+    if not attributes:
+        logger.error("missing 'attributes' in params")
+        raise ValueError("missing 'attributes' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.config.get_bios_attributes(attributes=attributes)
+        except Exception:
+            logger.exception("failed to fetch BIOS attributes for %s (attributes=%s)", host, attributes)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def get_idrac_attributes(
+    host: str,
+    attributes: str,
+    group: str = "idrac",
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Retrieve Dell iDRAC configuration attribute(s) for a given group.
+
+    Args:
+        host: iDRAC hostname or IP.
+        attributes: Comma-separated attribute name(s) to retrieve (required).
+        group: one of "idrac", "lc", or "system" (default "idrac").
+        port: HTTPS port (default 443).
+        verify: Whether to verify SSL certs.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+    if not attributes:
+        logger.error("missing 'attributes' in params")
+        raise ValueError("missing 'attributes' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.config.get_idrac_attributes(group=group, attributes=attributes)
+        except Exception:
+            logger.exception("failed to fetch iDRAC attributes for %s (group=%s attributes=%s)", host, group, attributes)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def search_bios_attributes(
+    host: str,
+    term: str,
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Search BIOS attributes for a matching name or value.
+
+    Args:
+        host: iDRAC hostname or IP.
+        term: Search term to match against attribute names or values (required).
+        port: HTTPS port (default 443).
+        verify: Whether to verify SSL certs.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+    if not term:
+        logger.error("missing 'term' in params")
+        raise ValueError("missing 'term' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.config.search_bios_attributes(term=term)
+        except Exception:
+            logger.exception("failed to search BIOS attributes for %s (term=%s)", host, term)
+            raise
+
+    return json.dumps(res, default=str)
+
+
+@mcp.tool
+async def search_idrac_attributes(
+    host: str,
+    term: str,
+    group: str = "idrac",
+    port: int = 443,
+    verify: bool = DEFAULT_IDRAC_SSL_VERIFY,
+) -> str:
+    """
+    Search iDRAC attributes for a matching name or value within a group.
+
+    Args:
+        host: iDRAC hostname or IP.
+        term: Search term to match against attribute names or values (required).
+        group: one of "idrac", "lc", or "system" (default "idrac").
+        port: HTTPS port (default 443).
+        verify: Whether to verify SSL certs.
+    """
+    if not host:
+        logger.error("missing 'host' in params")
+        raise ValueError("missing 'host' in params")
+    if not term:
+        logger.error("missing 'term' in params")
+        raise ValueError("missing 'term' in params")
+
+    creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
+    async with session_mgr.get_client(host, creds) as client:
+        try:
+            res = await client.config.search_idrac_attributes(term=term, group=group)
+        except Exception:
+            logger.exception("failed to search iDRAC attributes for %s (group=%s term=%s)", host, group, term)
             raise
 
     return json.dumps(res, default=str)

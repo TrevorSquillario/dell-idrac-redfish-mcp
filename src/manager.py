@@ -5,6 +5,8 @@ from fastmcp import FastMCP
 from fastmcp.utilities.types import Image
 from starlette.responses import JSONResponse
 from contextlib import asynccontextmanager
+import os
+from datetime import datetime
 
 from idrac_async_redfish_client.client import iDRACAsyncRedfishClient
 logger = logging.getLogger("idrac_redfish_mcp")
@@ -128,6 +130,32 @@ class PerHostSessionManager:
 
                     for host, client in list(self._clients.items()):
                         try:
+                            # If token creation timestamp exists, enforce timeout
+                            token_created = getattr(client, "_token_created_at", None)
+                            try:
+                                timeout = int(os.getenv("IDRAC_SESSION_TIMEOUT", "1800"))
+                            except Exception:
+                                timeout = 1800
+
+                            if token_created:
+                                try:
+                                    age = (datetime.utcnow() - token_created).total_seconds()
+                                except Exception:
+                                    age = 0
+                                if age > float(timeout):
+                                    logger.info("closing expired session for host %s (age=%.0fs timeout=%s)", host, age, timeout)
+                                    try:
+                                        await client.logout()
+                                    except Exception:
+                                        try:
+                                            await client.close()
+                                        except Exception:
+                                            logger.exception("failed to close expired client for host %s", host)
+                                    # remove from caches
+                                    self._clients.pop(host, None)
+                                    self._locks.pop(host, None)
+                                    continue
+
                             has_session = bool(getattr(client, "_session_id", None) or getattr(client, "_session_uri", None))
                             logger.debug("host %s: has_session=%s token_valid=%s", host, has_session, client.token_valid())
                         except Exception:
