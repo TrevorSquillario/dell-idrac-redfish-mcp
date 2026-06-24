@@ -3,7 +3,7 @@ Basic MCP Server for the Dell iDRAC using Redfish
 
 The goal of this project is not to be at feature parity with every Redfish endpoint but to narrow it's scope to useful tools for troubleshooting and eventually managing servers. Outputs have to be specially crafted to not exceed context windows and prevent context bloat. 
 
-# Setup
+# Hermes Setup
 
 Copy `.env.example` to `.env` or update the `compose.yaml` with the required environment variables.
 
@@ -43,3 +43,6 @@ cd /mcp/idrac-redfish-mcp
 fastmcp list src/fastmcp_server.py get_lc_logs host=192.168.0.200
 fastmcp call src/fastmcp_server.py get_lc_logs host=192.168.0.200
 ```
+
+# Claude Code Setup
+claude mcp add --transport http idrac  http://192.168.8.110:8088/mcp

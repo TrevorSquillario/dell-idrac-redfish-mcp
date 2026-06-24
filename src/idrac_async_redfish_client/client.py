@@ -30,6 +30,19 @@ from typing import Any, Dict, List, Optional, Union
 import io
 import base64
 
+# Domain errors for centralized mapping
+from idrac_async_redfish_client.errors import (
+    RedfishError,
+    RedfishNotFound,
+    RedfishUnauthorized,
+    RedfishClientError,
+    RedfishServerError,
+    RedfishTimeout,
+    RedfishConnectionError,
+    RedfishJSONError,
+    RedfishTransientError,
+)
+
 logger = logging.getLogger(__name__)
 
 # import services
@@ -271,21 +284,88 @@ class iDRACAsyncRedfishClient:
     async def request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
         """Generic async request wrapper with automatic 401 token refresh."""
         url = self._absolute_url(path)
-        
-        resp = await self.http.request(method, url, **kwargs)
-        
-        if resp.status_code == 401:
-            if self._username and self._password:
-                async with self._reauth_lock:
-                    # Double-check inside the lock to see if another task refreshed it already
-                    if resp.headers.get('X-Auth-Token') != self._token:
-                        await self.login(self._username, self._password)
-                    
-                    # Retry request
-                    resp = await self.http.request(method, url, **kwargs)
-                    
-        resp.raise_for_status()
-        return resp
+        # Retry configuration
+        attempts = int(os.getenv("IDRAC_RETRY_ATTEMPTS", "3"))
+        backoff_base = float(os.getenv("IDRAC_RETRY_BACKOFF", "0.5"))
+
+        last_exc: Optional[BaseException] = None
+        for attempt in range(1, max(1, attempts) + 1):
+            try:
+                resp = await self.http.request(method, url, **kwargs)
+
+                # Handle authentication renewal on 401
+                if resp.status_code == 401:
+                    if self._username and self._password:
+                        async with self._reauth_lock:
+                            if resp.headers.get('X-Auth-Token') != self._token:
+                                await self.login(self._username, self._password)
+                            resp = await self.http.request(method, url, **kwargs)
+
+                # Map status codes to domain exceptions so callers can handle them
+                status = resp.status_code
+                if 200 <= status < 300:
+                    return resp
+                if status == 404:
+                    raise RedfishNotFound(f"Client error '404 Not Found' for url '{url}'")
+                if status in (401, 403):
+                    raise RedfishUnauthorized(f"Client error '{status}' for url '{url}'")
+                if 400 <= status < 500:
+                    raise RedfishClientError(f"Client error '{status}' for url '{url}'")
+                if 500 <= status < 600:
+                    # Treat server-side 5xx as transient - allow retries
+                    raise RedfishServerError(f"Server error '{status}' for url '{url}'")
+
+            except (httpx.RequestError, RedfishServerError) as e:
+                # Network-level errors and server 5xx are considered transient.
+                last_exc = e
+                if attempt < attempts:
+                    sleep_time = backoff_base * (2 ** (attempt - 1))
+                    try:
+                        await asyncio.sleep(sleep_time)
+                    except Exception:
+                        pass
+                    continue
+
+                # Final attempt failed - map httpx errors to domain exceptions
+                if isinstance(e, httpx.RequestError):
+                    # Distinguish timeouts
+                    if isinstance(e, httpx.TimeoutException):
+                        raise RedfishTimeout(str(e)) from e
+                    raise RedfishConnectionError(str(e)) from e
+                # If it's a RedfishServerError and we've exhausted retries, surface it
+                raise
+
+            except httpx.HTTPStatusError as e:
+                # Defensive mapping for callers that may have raised via raise_for_status
+                resp = getattr(e, 'response', None)
+                status = getattr(resp, 'status_code', None)
+                if status == 404:
+                    raise RedfishNotFound(str(e)) from e
+                if status in (401, 403):
+                    raise RedfishUnauthorized(str(e)) from e
+                if 400 <= (status or 0) < 500:
+                    raise RedfishClientError(str(e)) from e
+                if 500 <= (status or 0) < 600:
+                    last_exc = e
+                    if attempt < attempts:
+                        sleep_time = backoff_base * (2 ** (attempt - 1))
+                        try:
+                            await asyncio.sleep(sleep_time)
+                        except Exception:
+                            pass
+                        continue
+                    raise RedfishServerError(str(e)) from e
+
+            except Exception as e:
+                # Unknown errors - surface as-is
+                raise
+
+        # If we exit the loop and still have a last exception, raise it
+        if last_exc:
+            raise last_exc
+
+        # Fallback - shouldn't normally be reached
+        raise RedfishError(f"Unhandled error requesting {method} {url}")
 
     async def get(self, path: str, **kwargs: Any) -> httpx.Response:
         return await self.request('GET', path, **kwargs)

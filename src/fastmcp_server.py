@@ -12,6 +12,7 @@ from starlette.responses import JSONResponse
 
 from manager import PerHostSessionManager
 from utils.logging_config import configure_logging
+from idrac_async_redfish_client.errors import RedfishError, RedfishNotFound
 
 # Configure logging early so Docker/stdout captures logs consistently
 configure_logging()
@@ -53,11 +54,6 @@ async def get_error_and_event_registry(
     """
     Retrieve the iDRAC Message Registry (EEMI) mapping or specific message entries.
 
-    This will first attempt to load the bundled `files/eemi.json` registry shipped
-    with this package. If that file is present and valid, its `Messages` mapping
-    (or the specific entries for `message_ids`) will be returned. If not present
-    or loading fails, the code falls back to querying the target iDRAC via Redfish.
-
     Args:
         message_ids: List of message ID strings to retrieve (e.g. ['CPU0001']).
         host: The IP address or hostname of the iDRAC.
@@ -84,10 +80,21 @@ async def get_error_and_event_registry(
     except Exception:
         logger.debug("failed to load bundled eemi.json, falling back to iDRAC", exc_info=True)
 
+    # If loading from file failed, fetch from Redfish API
     creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
     async with session_mgr.get_client(host, creds) as client:
         # delegate to the config service
-        res = await client.config.get_error_and_event_registry(message_id)
+        try:
+            res = await client.config.get_error_and_event_registry(message_id)
+        except RedfishNotFound:
+            logger.info("message registry entry %s not found on %s", message_id, host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching message registry from %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
+        except Exception:
+            logger.exception("failed to fetch message registry for %s", host)
+            raise
     return json.dumps(res, default=str)
 
 
@@ -123,13 +130,23 @@ async def get_lc_logs(
 
     creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
     async with session_mgr.get_client(host, creds) as client:
-        logs = await client.logs.get_lifecycle_logs(
-            start_date=start_date,
-            end_date=end_date,
-            severity=severity,
-            top=top,
-            skip=skip,
-        )
+        try:
+            logs = await client.logs.get_lifecycle_logs(
+                start_date=start_date,
+                end_date=end_date,
+                severity=severity,
+                top=top,
+                skip=skip,
+            )
+        except RedfishNotFound:
+            logger.info("lifecycle logs not found for %s", host)
+            return json.dumps([], default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching lifecycle logs for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
+        except Exception:
+            logger.exception("failed to fetch lifecycle logs for %s", host)
+            raise
     return json.dumps(logs)
 
 
@@ -150,9 +167,6 @@ async def get_device_rollup_health_status(
         verify: Whether to verify SSL certs.
         username: iDRAC username.
         password: iDRAC password.
-
-    Returns:
-        JSON string list of matched rollup members.
     """
     if not host:
         logger.error("missing 'host' in params")
@@ -162,6 +176,12 @@ async def get_device_rollup_health_status(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.health.get_device_rollup_health_status(device_filter=device_filter)
+        except RedfishNotFound:
+            logger.info("rollup health status not found for %s", host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching rollup health for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch rollup health status for %s", host)
             raise
@@ -186,6 +206,12 @@ async def get_storage_health(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.health.get_storage_health()
+        except RedfishNotFound:
+            logger.info("storage health not found for %s", host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching storage health for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch storage health for %s", host)
             raise
@@ -219,6 +245,12 @@ async def get_server_slot_info(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.inventory.get_server_slot_info(slot_type=slot_type)
+        except RedfishNotFound:
+            logger.info("server slot info not found for %s", host)
+            return json.dumps([], default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching server slot info for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch server slot info for %s", host)
             raise
@@ -244,6 +276,12 @@ async def get_pciedevice_info(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.inventory.get_pciedevice_info()
+        except RedfishNotFound:
+            logger.info("PCIe device info not found for %s", host)
+            return json.dumps([], default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching PCIe device info for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch PCIe device info for %s", host)
             raise
@@ -285,6 +323,12 @@ async def get_chassis_info(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.get_redfish_uri('/redfish/v1/Chassis/System.Embedded.1')
+        except RedfishNotFound:
+            logger.info("chassis info not found for %s", host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching chassis info for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch chassis info for %s", host)
             raise
@@ -311,6 +355,12 @@ async def get_firmware_inventory(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.inventory.get_firmware_inventory()
+        except RedfishNotFound:
+            logger.info("firmware inventory not found for %s", host)
+            return json.dumps([], default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching firmware inventory for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch firmware inventory for %s", host)
             raise
@@ -335,12 +385,19 @@ async def get_power_usage(
     creds = {"username": IDRAC_USERNAME, "password": IDRAC_PASSWORD, "verify": verify}
     async with session_mgr.get_client(host, creds) as client:
         try:
-            res = await client.get_redfish_uri('/redfish/v1/Chassis/System.Embedded.1/Power/PowerControl')
+            res = await client.get_redfish_uri('/redfish/v1/Chassis/System.Embedded.1/Power')
+        except RedfishNotFound:
+            logger.info("power usage not found for %s", host)
+            return json.dumps([], default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching power usage for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch power usage for %s", host)
             raise
 
-    return json.dumps(res, default=str)
+    power_control = res.get("PowerControl", [])
+    return json.dumps(power_control, default=str)
 
 
 @mcp.tool
@@ -376,6 +433,12 @@ async def get_system_info(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.get_redfish_uri('/redfish/v1/Systems/System.Embedded.1', select=select)
+        except RedfishNotFound:
+            logger.info("system info not found for %s", host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching system info for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch system info for %s", host)
             raise
@@ -407,6 +470,12 @@ async def get_metric_report_definitions(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res_members = await client.telemetry.get_metric_report_definitions(report_name=report_name)
+        except RedfishNotFound:
+            logger.info("metric report definitions not found for %s", host)
+            return json.dumps([], default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching metric report definitions for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch metric report definitions for %s", host)
             raise
@@ -435,6 +504,13 @@ async def get_metric_report_readings(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.telemetry.get_metric_report_readings(report_name=report_name)
+        except RedfishNotFound:
+            logger.info("metric report %s not found for host %s", report_name, host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching metric report readings for %s: %s", host, e)
+            # Return a controlled error payload instead of raising, to avoid crashing the MCP server
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch metric report readings for %s", host)
             raise
@@ -471,6 +547,12 @@ async def get_storage_controller_info(
             else:
                 path = "/redfish/v1/Systems/System.Embedded.1/Storage"
             res = await client.get_redfish_uri(path, select=select)
+        except RedfishNotFound:
+            logger.info("storage controller %s not found for %s", controller, host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching storage info for %s (controller=%s): %s", host, controller, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch storage info for %s (controller=%s)", host, controller)
             raise
@@ -505,6 +587,12 @@ async def get_bios_attributes(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.config.get_bios_attributes(attributes=attributes)
+        except RedfishNotFound:
+            logger.info("BIOS attributes %s not found for %s", attributes, host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching BIOS attributes for %s (attributes=%s): %s", host, attributes, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch BIOS attributes for %s (attributes=%s)", host, attributes)
             raise
@@ -541,6 +629,12 @@ async def get_idrac_attributes(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.config.get_idrac_attributes(group=group, attributes=attributes)
+        except RedfishNotFound:
+            logger.info("iDRAC attributes %s not found for %s (group=%s)", attributes, host, group)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching iDRAC attributes for %s (group=%s attributes=%s): %s", host, group, attributes, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch iDRAC attributes for %s (group=%s attributes=%s)", host, group, attributes)
             raise
@@ -575,6 +669,12 @@ async def search_bios_attributes(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.config.search_bios_attributes(term=term)
+        except RedfishNotFound:
+            logger.info("BIOS search term %s returned no results for %s", term, host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error searching BIOS attributes for %s (term=%s): %s", host, term, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to search BIOS attributes for %s (term=%s)", host, term)
             raise
@@ -611,6 +711,12 @@ async def search_idrac_attributes(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.config.search_idrac_attributes(term=term, group=group)
+        except RedfishNotFound:
+            logger.info("iDRAC search term %s returned no results for %s (group=%s)", term, host, group)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error searching iDRAC attributes for %s (group=%s term=%s): %s", host, group, term, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to search iDRAC attributes for %s (group=%s term=%s)", host, group, term)
             raise
@@ -643,6 +749,12 @@ async def export_server_screen_shot(
     async with session_mgr.get_client(host, creds) as client:
         try:
             img_path = await client.media.export_server_screen_shot(filetype=filetype)
+        except RedfishNotFound:
+            logger.info("screenshot not available for %s", host)
+            return Image(path="", format="png")
+        except RedfishError as e:
+            logger.exception("redfish error exporting screenshot for %s: %s", host, e)
+            return Image(path="", format="png")
         except Exception:
             logger.exception("failed to export server screenshot for %s", host)
             raise
@@ -679,6 +791,12 @@ async def support_assist_collection(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.support.support_assist_collection(filter_val=filter_val, data=data)
+        except RedfishNotFound:
+            logger.info("support assist collection not found for %s", host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error starting support assist for %s: %s", host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to start SupportAssist collection for %s", host)
             raise
@@ -709,6 +827,12 @@ async def get_redfish_uri(
     async with session_mgr.get_client(host, creds) as client:
         try:
             res = await client.get_redfish_uri(path, select=select)
+        except RedfishNotFound:
+            logger.info("requested uri %s not found on %s", path, host)
+            return json.dumps({}, default=str)
+        except RedfishError as e:
+            logger.exception("redfish error fetching %s from %s: %s", path, host, e)
+            return json.dumps({"error": str(e)}, default=str)
         except Exception:
             logger.exception("failed to fetch %s from %s", path, host)
             raise

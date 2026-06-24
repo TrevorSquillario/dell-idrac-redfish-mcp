@@ -3,6 +3,7 @@ import logging
 from idrac_async_redfish_client.services.base import BaseService
 from typing import Optional, List
 import json
+from idrac_async_redfish_client.errors import RedfishNotFound, RedfishError
 
 logger = logging.getLogger("idrac_redfish_mcp")
 
@@ -67,7 +68,14 @@ class TelemetryService(BaseService):
         """
         uri = f"/redfish/v1/TelemetryService/MetricReports/{report_name}"
         logger.info("requesting metric report %s", uri)
-        resp = await self.client.get(uri)
+        try:
+            resp = await self.client.get(uri)
+        except RedfishNotFound:
+            logger.info("metric report %s not found (404)", report_name)
+            return {}
+        except RedfishError as e:
+            logger.exception("error fetching metric report %s: %s", uri, e)
+            raise
 
         if resp.status_code == 401:
             logger.warning("unauthorized access to %s (401)", uri)
